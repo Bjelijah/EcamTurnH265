@@ -1,0 +1,21 @@
+[core]
+	repositoryformatversion = 0
+	filemode = false
+	bare = false
+	logallrefupdates = true
+	symlinks = false
+	ignorecase = true
+	hideDotFiles = dotGitOnly
+[gui]
+	wmstate = normal
+	geometry = 799x475+260+334 321 214
+[branch "ecamTurnH265"]
+	remote = origin
+	merge = refs/heads/ecamTurnH265
+[remote "origin"]
+	url = https://github.com/Bjelijah/EcamTurnH265.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[https]
+	postBuffer = 52428800000
+[http]
+	postBuffer = 524288000

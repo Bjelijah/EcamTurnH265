@@ -1,0 +1,53 @@
+Version 0.9.6
+1.�����˳���Ľ�׳�ԣ�ƽ̨����nullʱ���򲻻��
+2.�ط��б����Ժ���б��ɫ
+3.�޸��˲��ܷ��ص�BUG(ecam_stream_req_free ȥ����)
+4.�豸�б���������ˢ��
+5.�ط�seekbar���������ʱ��
+6.�豸��������ͼ��ת����
+7.item.xml �޸���famelayout��background="@drawable/list_item_bg_middle"ʹ������ ���Ұ���ʱ��ʾ��ɫ
+	���޸���text��paddingTop="25dip"ʹ�豸����������ʾ�����
+8.device_manager_item.xml �޸���famelayout��background="@drawable/list_item_bg_middle"ʹ������ ���Ұ���ʱ��ʾ��ɫ
+
+Version 0.9.7
+1.�����videolist�ڴ����������
+2.�����videolist����Խ������
+
+Version 0.9.9 
+1.�����˶�����֧��
+2.���������͹���
+3.�û�������������뷨���ڵ������
+
+Version 1.0.1
+1.�ײ���Դ�ĳ����� ÿ���˳��˳����ٿ�
+2.��Ƶ�·�������һ��ʼ����ʾ
+
+Version 1.0.2
+1.�޸���invite֮ǰ�����˳����³��������BUG
+2.�豸������CheckBox����ֱ���޸����ã������˳���������ʱ�䣩
+3.������û�е�Դָʾ�Ƶ��豸��ȡ״̬���׳��쳣����֮���״̬��ȡ������BUG
+
+Version 1.0.3
+1.��ʼ����ͻ�ȡ�豸��Ϣ����SoapManager���������������ж��豸�Ƿ���SD��
+2.������Ƶʱ��PunpIP,�˿�ֱ�Ӵ�SoapManager���������е��豸��Ϣ�б���ȡ
+3.�豸�����˳��иĶ�ʱ����������
+4.����֪ͨ�����ڵ����豸
+5.VedioList��ӵײ�����
+
+Version 1.0.4
+1.����һֱ��ʾ����TEXTVIEW
+2.û��������ʾ��ʱ����ʾPROGRESS
+3.VedioList�������Title
+
+Version 1.0.5
+1.����ͷ���Ƶ�ڴ�ʱ��Ƶ���ڲ��ŵ��³��������BUG
+2.libecamstream.a�����ӻ�ȡ׼ȷ�ط�ʱ��Ľӿ� ����ط�seekBar��׼ȷ��BUG
+3.����������³����˳���freeHandle��BUG
+
+Version 1.0.6
+1.�����˻�ȡ�豸Wifiǿ��
+2.�豸������ť��ɺ�ɫ
+
+Version 1.1.10
+1 add https 
+2 add hisi h265 decode
