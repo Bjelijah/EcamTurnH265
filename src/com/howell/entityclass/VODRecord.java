@@ -30,7 +30,12 @@ public class VODRecord implements Serializable {
     }
     
     
-    public String getTimeZoneStartTime() {
+    public VODRecord() {
+		super();
+	}
+
+
+	public String getTimeZoneStartTime() {
 		return TimeZoneStartTime;
 	}
 

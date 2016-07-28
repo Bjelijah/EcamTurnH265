@@ -636,7 +636,7 @@ JNIEXPORT jboolean JNICALL Java_com_howell_jni_JniUtil_readyPlayLive
 	media_head.au_sample = 8;
 	media_head.au_bits = 16;
 	media_head.adec_code = ADEC_AAC;
-//	media_head.vdec_code = 0x0f;
+	//	media_head.vdec_code = 0x0f;
 	media_head.vdec_code = 0x10;
 
 	/*
@@ -811,7 +811,7 @@ typedef struct {
 	JavaVM* jvm;
 	JNIEnv * env;
 	jobject callback_obj;
-	jmethodID on_connect_method,on_disconnect_method;
+	jmethodID on_connect_method,on_disconnect_method,on_recordFile_method;
 	int transDataLen;
 }TRANS_T;
 
@@ -854,13 +854,33 @@ int on_my_connect(const char* session_id){
 
 	return 0;
 }
+int on_record_list_res(const char* jsonStr,int len){
+	if(jsonStr==NULL)return -1;
+	if(g_transMgr==NULL)return -1;
+	if(g_transMgr->callback_obj==NULL)return -1;
+	if(g_transMgr->on_recordFile_method==NULL)return -1;
+	JNIEnv *env = NULL;
+	JavaVM * _jvm = g_transMgr->jvm;
+	if(_jvm->AttachCurrentThread( &env, NULL) != JNI_OK) {
+		LOGE("%s: AttachCurrentThread() failed", __FUNCTION__);
+		return 0;
+	}
+	jstring str = env->NewStringUTF(jsonStr);
+	env->CallVoidMethod(g_transMgr->callback_obj,g_transMgr->on_recordFile_method,str);
+	env->DeleteLocalRef(str);
+	if (_jvm->DetachCurrentThread() != JNI_OK) {
+		LOGE("%s: DetachCurrentThread() failed", __FUNCTION__);
+	}
+
+	return 0;
+}
 
 int on_my_ack_res(int msgCommand,void * res,int len){
 
 	LOGI("msgCommand = 0x%x",msgCommand);
-	if(msgCommand == 0x13){
-		//trans_deInit();
-		//LOGI("trans deinit ok");
+	switch (msgCommand) {
+	case 0x13:
+	{
 		JNIEnv *env = NULL;
 		JavaVM * _jvm = g_transMgr->jvm;
 		if(_jvm->AttachCurrentThread( &env, NULL) != JNI_OK) {
@@ -872,6 +892,19 @@ int on_my_ack_res(int msgCommand,void * res,int len){
 			LOGE("%s: DetachCurrentThread() failed", __FUNCTION__);
 		}
 	}
+	break;
+	case 0x104:
+	{
+		on_record_list_res((const char*)res,len);
+	}
+	break;
+	default:
+		break;
+	}
+
+
+
+
 
 	return 0;
 }
@@ -1029,6 +1062,12 @@ JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transSetCallbackMethodName
 		break;
 	}
 
+	case 2:{
+		jclass clz = env->GetObjectClass(g_transMgr->callback_obj);
+		g_transMgr->on_recordFile_method = env->GetMethodID(clz,_mehtod,"(Ljava/lang/String;)V");
+		break;
+	}
+
 	default:
 		break;
 	}
@@ -1065,7 +1104,7 @@ JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_catchPic
 
 
 JNIEXPORT jint JNICALL Java_com_howell_jni_JniUtil_transGetStreamLenSomeTime
-  (JNIEnv *, jclass){
+(JNIEnv *, jclass){
 	if(g_transMgr==NULL)return 0;
 	int streamLen = g_transMgr->transDataLen;
 	g_transMgr->transDataLen = 0;
@@ -1073,7 +1112,7 @@ JNIEXPORT jint JNICALL Java_com_howell_jni_JniUtil_transGetStreamLenSomeTime
 }
 
 JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transGetCam
-  (JNIEnv *env, jclass, jstring jsonStr, jint len){
+(JNIEnv *env, jclass, jstring jsonStr, jint len){
 	const char *_jsonStr = env->GetStringUTFChars(jsonStr,0);
 	trans_getCamrea(_jsonStr,len);
 	env->ReleaseStringUTFChars(jsonStr,_jsonStr);
@@ -1081,14 +1120,14 @@ JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transGetCam
 }
 
 JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transGetRecordFiles
-  (JNIEnv *env, jclass, jstring jsonStr, jint len){
+(JNIEnv *env, jclass, jstring jsonStr, jint len){
 	const char *_jsonStr = env->GetStringUTFChars(jsonStr,0);
 	trans_getRecordFiles(_jsonStr,len);
 	env->ReleaseStringUTFChars(jsonStr,_jsonStr);
 }
 
 JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transSetCrt
-  (JNIEnv *env, jclass, jstring ca, jstring client, jstring key){
+(JNIEnv *env, jclass, jstring ca, jstring client, jstring key){
 	const char * _ca = env->GetStringUTFChars(ca,0);
 	const char * _client = env->GetStringUTFChars(client,0);
 	const char * _key  = env->GetStringUTFChars(key,0);
@@ -1106,7 +1145,7 @@ JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transSetCrt
 }
 
 JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transSetCrtPaht
-  (JNIEnv *env, jclass, jstring caPath, jstring clientPath, jstring keyPath){
+(JNIEnv *env, jclass, jstring caPath, jstring clientPath, jstring keyPath){
 	const char *_caPath = env->GetStringUTFChars(caPath,0);
 	const char * _clientPath = env->GetStringUTFChars(clientPath,0);
 	const char * _keyPath = env->GetStringUTFChars(keyPath,0);

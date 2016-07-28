@@ -62,6 +62,7 @@ public class VideoList extends ListActivity implements OnItemClickListener,ICons
     private static final int SETADAPTER = 1;
     private static final int SETENABLE = 2;
     private static final int SHOWNOVIDEOIMG =3;
+    
     private ImageButton mSearch;
     private ImageView noVideos;
     private com.howell.datetime.WheelMain wheelMain;
@@ -435,7 +436,16 @@ public class VideoList extends ListActivity implements OnItemClickListener,ICons
 				}else{
 					noVideos.setVisibility(View.GONE);
 				}
-    		}
+    		}else if(msg.what == MSG_RECORD_LIST_GET){
+				mList = playMgr.getMList();
+				myHandler.sendEmptyMessage(SETADAPTER);
+				myHandler.sendEmptyMessage(SHOWNOVIDEOIMG);
+    			
+			}
+    		
+    		
+    		
+    		
     	}
     };
     

@@ -24,4 +24,9 @@ public interface IConst {
 	final static int MSG_LOGIN_FAIL = 0xa1;
 	final static int MSG_CONNECT_OK = 0xa2;
 	
+	//videoList
+	final static int MSG_RECORD_LIST_GET = 0xb0;
+	
+	
+	
 }

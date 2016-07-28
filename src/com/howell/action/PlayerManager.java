@@ -2,10 +2,15 @@ package com.howell.action;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.howell.activity.PlayerActivity;
+import com.howell.entityclass.VODRecord;
 import com.howell.jni.JniUtil;
 import com.howell.utils.IConst;
 import com.howell.utils.JsonUtil;
@@ -40,6 +45,15 @@ public class PlayerManager implements IConst{
 	
 	private Timer timer = null;
 	private MyTimerTask myTimerTask = null;
+	
+	ArrayList<VODRecord> mList = null;
+	
+	public ArrayList<VODRecord> getMList(){
+		return mList;
+	}
+	
+
+	
 	public void setContext(Context context){
 		this.context = context;
 	}
@@ -122,6 +136,9 @@ public class PlayerManager implements IConst{
 				JniUtil.transSetCallBackObj(PlayerManager.this, 0);
 				JniUtil.transSetCallbackMethodName("onConnect", 0);
 				JniUtil.transSetCallbackMethodName("onDisConnect", 1);
+				JniUtil.transSetCallbackMethodName("onRecordFileList", 2);
+				
+				
 				
 				InputStream ca = getClass().getResourceAsStream("/assets/ca.crt");
 				InputStream client = getClass().getResourceAsStream("/assets/client.crt");
@@ -237,7 +254,15 @@ public class PlayerManager implements IConst{
 		}.execute(str);
 	}
 	
-	
+	public void onRecordFileList(String jsonStr){
+		try {
+			mList = JsonUtil.parseRecordFileList(new JSONObject(jsonStr));
+			handler.sendEmptyMessage(MSG_RECORD_LIST_GET);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 	
 	
