@@ -129,8 +129,8 @@ public class DeviceSetActivity extends Activity implements
     	SoapManager.context = this;
         mTvDeviceName = (TextView) findViewById(R.id.tv_device_name);
         mSeekBar_reso = (SeekBar) findViewById(R.id.seekBar1);
-//        mSeekBar_reso.setMax(2);
-        mSeekBar_reso.setMax(1);
+        mSeekBar_reso.setMax(2);
+//        mSeekBar_reso.setMax(1);
         mSeekBar_reso.setOnSeekBarChangeListener(this);
         //FIXME
         mSeekBar_reso.setEnabled(false);
@@ -144,19 +144,19 @@ public class DeviceSetActivity extends Activity implements
         quality_text_ = (TextView) findViewById(R.id.quality_str);
         vmd_checkbox_ = (CheckBox)findViewById(R.id.vmd_enable);
         
-        vmd_checkbox_.setEnabled(false);//FIXME 
+//        vmd_checkbox_.setEnabled(false);//FIXME 
         
         ((TextView)findViewById(R.id.vmd_text)).setTextColor(getResources().getColor(R.color.gray));//FIXME
         
         
         video_checkbox = (CheckBox)findViewById(R.id.turn_over);
         
-        video_checkbox.setEnabled(false);//FIXME
+//        video_checkbox.setEnabled(false);//FIXME
         
         power_led_checkbox = (CheckBox)findViewById(R.id.power_led);
     
         mCameraUpdateStatus = (TextView)findViewById(R.id.camera_update_status);
-        power_led_checkbox.setEnabled(false);//FIXME
+//        power_led_checkbox.setEnabled(false);//FIXME
         mCameraUpdateStatus.setTextColor(getResources().getColor(R.color.gray));
         mUpdateButton = (Button)findViewById(R.id.setting_update_button);
         ll_alarm_push = (LinearLayout)findViewById(R.id.ll_alarm_push);
@@ -168,9 +168,9 @@ public class DeviceSetActivity extends Activity implements
         
         mCameraVersion = (TextView)findViewById(R.id.tv_camera_version);
         mTvTurnOver = (TextView)findViewById(R.id.tv_device_set_picture_turn_over);
-        mTvTurnOver.setTextColor(getResources().getColor(R.color.gray));//FIXME
+//        mTvTurnOver.setTextColor(getResources().getColor(R.color.gray));//FIXME
         mTvLightState = (TextView)findViewById(R.id.tv_device_set_light_state);
-        mTvLightState.setTextColor(getResources().getColor(R.color.gray));//FIXME
+//        mTvLightState.setTextColor(getResources().getColor(R.color.gray));//FIXME
         mBack = (ImageButton)findViewById(R.id.ib_device_set_back);
         
         mSeekBar_reso.setOnSeekBarChangeListener(this);
@@ -508,7 +508,7 @@ public class DeviceSetActivity extends Activity implements
             boolean fromUser) {
     	if (seekBar == mSeekBar_reso) {
     		refreshResolutionText(progress);
-    		saveEncodingParam(true);
+//    		saveEncodingParam(true);
     	}
     	else {
     		refreshImageQualityText(progress);
