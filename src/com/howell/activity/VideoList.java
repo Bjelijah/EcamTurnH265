@@ -78,7 +78,6 @@ public class VideoList extends ListActivity implements OnItemClickListener,ICons
     
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
         setContentView(R.layout.video_list);
         mActivities = Activities.getInstance();
@@ -97,7 +96,6 @@ public class VideoList extends ListActivity implements OnItemClickListener,ICons
 			
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				mList = new ArrayList<VODRecord>();
 				LayoutInflater inflater=LayoutInflater.from(VideoList.this);
 				String country = getResources().getConfiguration().locale.getCountry(); 
@@ -114,7 +112,6 @@ public class VideoList extends ListActivity implements OnItemClickListener,ICons
 					try {
 						calendar.setTime(dateFormat.parse(time));
 					} catch (ParseException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -141,14 +138,9 @@ public class VideoList extends ListActivity implements OnItemClickListener,ICons
 				        pd.setProgressStyle(ProgressDialog.STYLE_SPINNER); //锟斤拷锟矫斤拷锟斤拷锟斤拷锟绞斤拷锟�锟斤拷锟斤拷锟�
 						pd.show();
 						
-						String endTime = wheelMain.getEndTime();
-						lastRefreshEndTime = endTime;
-						lastRefreshStartTime = wheelMain.getStartTime(endTime);
-						playMgr.getRecordFiles(lastRefreshStartTime, lastRefreshEndTime);
-						
-						
-						
-						
+					
+				
+	
 						new AsyncTask<Void, Void, Void>() {
 							protected Void doInBackground(Void... params) {
 //								mSearch.setEnabled(false);
@@ -161,31 +153,31 @@ public class VideoList extends ListActivity implements OnItemClickListener,ICons
 					            //----
 								
 							
-								
+								playMgr.getRecordFiles(lastRefreshStartTime, lastRefreshEndTime);//FIXME
 						
-								if(!isNewVer){
-						            for(int i = 0 ; i < round ; i++){
-						            	mList = utils.getVideoList(client, lastRefreshStartTime,lastRefreshEndTime);//FIXME
-						            	
-						        
-						            	if(mList.size() == 0){
-						            		Date newStartDate = TimeTransform.StringToDate(lastRefreshStartTime);
-							        		Date newEndDate = TimeTransform.StringToDate(lastRefreshEndTime);
-							        		lastRefreshStartTime = TimeTransform.reduceTenDays(newStartDate);
-							        		lastRefreshEndTime = TimeTransform.reduceTenDays(newEndDate);
-							            }else{
-							            	break;
-							            }
-					            	}
-								}else{
-									SimpleDateFormat foo = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-									foo.setTimeZone(TimeZone.getTimeZone("UTC"));
-									Date begDate = new Date(1970 - 1900, 1 - 1, 1, 0, 0, 0);
-						            lastRefreshStartTime = foo.format(begDate);
-									utils.clearResource();
-							        mList = utils.getNewVerVideoList(client, lastRefreshStartTime,lastRefreshEndTime);
-								}
-					            adapter.mAdapterList = mList;
+//								if(!isNewVer){
+//						            for(int i = 0 ; i < round ; i++){
+//						            	mList = utils.getVideoList(client, lastRefreshStartTime,lastRefreshEndTime);
+//						            	
+//						        
+//						            	if(mList.size() == 0){
+//						            		Date newStartDate = TimeTransform.StringToDate(lastRefreshStartTime);
+//							        		Date newEndDate = TimeTransform.StringToDate(lastRefreshEndTime);
+//							        		lastRefreshStartTime = TimeTransform.reduceTenDays(newStartDate);
+//							        		lastRefreshEndTime = TimeTransform.reduceTenDays(newEndDate);
+//							            }else{
+//							            	break;
+//							            }
+//					            	}
+//								}else{
+//									SimpleDateFormat foo = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+//									foo.setTimeZone(TimeZone.getTimeZone("UTC"));
+//									Date begDate = new Date(1970 - 1900, 1 - 1, 1, 0, 0, 0);
+//						            lastRefreshStartTime = foo.format(begDate);
+//									utils.clearResource();
+//							        mList = utils.getNewVerVideoList(client, lastRefreshStartTime,lastRefreshEndTime);
+//								}
+//					            adapter.mAdapterList = mList;
 					            
 //								getVideoList(wheelMain.getStartTime(endTime),endTime);
 								return null;
@@ -193,17 +185,17 @@ public class VideoList extends ListActivity implements OnItemClickListener,ICons
 
 							@Override
 							protected void onPostExecute(Void result) {
-								try{
-									myHandler.sendEmptyMessage(SETADAPTER);
-									pd.dismiss();
-									if(mList.size() == 0){
-										noVideos.setVisibility(View.VISIBLE);
-									}else{
-										noVideos.setVisibility(View.GONE);
-									}
-								}catch (Exception e) {
-									// TODO: handle exception
-								}
+//								try{
+//									myHandler.sendEmptyMessage(SETADAPTER);
+//									pd.dismiss();
+//									if(mList.size() == 0){
+//										noVideos.setVisibility(View.VISIBLE);
+//									}else{
+//										noVideos.setVisibility(View.GONE);
+//									}
+//								}catch (Exception e) {
+//									e.printStackTrace();
+//								}
 							}
 						}.execute();
 						
@@ -230,68 +222,71 @@ public class VideoList extends ListActivity implements OnItemClickListener,ICons
 			
 			@Override
 			public void onRefresh() {
-				// TODO Auto-generated method stub
 //				
 				new AsyncTask<Void, Void, Void>() {
 					protected Void doInBackground(Void... params) {
 //						int ret = 0;
 						mList = new ArrayList<VODRecord>();
-						if(!isNewVer){
-							int round = 6;
-							SimpleDateFormat foo = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-							foo.setTimeZone(TimeZone.getTimeZone("UTC"));
-							Date endDate = new Date();
-				            Date startDate = new Date(System.currentTimeMillis() - 10 * 24 * 60 * 60 * 1000);
-				            lastRefreshEndTime = foo.format(endDate);
-				            lastRefreshStartTime = foo.format(startDate);
-				            //----
-				            for(int i = 0 ; i < round ; i++){
-				            	mList = utils.getVideoList(client, lastRefreshStartTime,lastRefreshEndTime);
-				            	if(mList.size() == 0){
-				            		Date newStartDate = TimeTransform.StringToDate(lastRefreshStartTime);
-					        		Date newEndDate = TimeTransform.StringToDate(lastRefreshEndTime);
-					        		lastRefreshStartTime = TimeTransform.reduceTenDays(newStartDate);
-					        		lastRefreshEndTime = TimeTransform.reduceTenDays(newEndDate);
-					            }else{
-					            	break;
-					            }
-			            	}
-						}else{
-							//device is new version
-							Log.e("vedioList","is new version");
-							SimpleDateFormat foo = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-							foo.setTimeZone(TimeZone.getTimeZone("UTC"));
-							Date endDate = new Date();
-							Date begDate = new Date(1970 - 1900, 1 - 1, 1, 0, 0, 0);
-				            lastRefreshEndTime = foo.format(endDate);
-				            lastRefreshStartTime = foo.format(begDate);
-				            utils.clearResource();
-				            mList = utils.getNewVerVideoList(client, lastRefreshStartTime,lastRefreshEndTime);
-						}
-			            adapter.mAdapterList = mList;
+						
+						getStartEndTime();
+						playMgr.getRecordFiles(lastRefreshStartTime, lastRefreshEndTime);
+						
+//						if(!isNewVer){
+//							int round = 6;
+//							SimpleDateFormat foo = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+//							foo.setTimeZone(TimeZone.getTimeZone("UTC"));
+//							Date endDate = new Date();
+//				            Date startDate = new Date(System.currentTimeMillis() - 10 * 24 * 60 * 60 * 1000);
+//				            lastRefreshEndTime = foo.format(endDate);
+//				            lastRefreshStartTime = foo.format(startDate);
+//				            //----
+//				            for(int i = 0 ; i < round ; i++){
+//				            	mList = utils.getVideoList(client, lastRefreshStartTime,lastRefreshEndTime);
+//				            	if(mList.size() == 0){
+//				            		Date newStartDate = TimeTransform.StringToDate(lastRefreshStartTime);
+//					        		Date newEndDate = TimeTransform.StringToDate(lastRefreshEndTime);
+//					        		lastRefreshStartTime = TimeTransform.reduceTenDays(newStartDate);
+//					        		lastRefreshEndTime = TimeTransform.reduceTenDays(newEndDate);
+//					            }else{
+//					            	break;
+//					            }
+//			            	}
+//						}else{
+//							//device is new version
+//							Log.e("vedioList","is new version");
+//							SimpleDateFormat foo = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+//							foo.setTimeZone(TimeZone.getTimeZone("UTC"));
+//							Date endDate = new Date();
+//							Date begDate = new Date(1970 - 1900, 1 - 1, 1, 0, 0, 0);
+//				            lastRefreshEndTime = foo.format(endDate);
+//				            lastRefreshStartTime = foo.format(begDate);
+//				            utils.clearResource();
+//				            mList = utils.getNewVerVideoList(client, lastRefreshStartTime,lastRefreshEndTime);
+//						}
+//			            adapter.mAdapterList = mList;
 						return null;
 					}
 
 					@Override
 					protected void onPostExecute(Void result) {
-						try{
-							myHandler.sendEmptyMessage(SETADAPTER);
-							if(mList.size() == 0){
-								noVideos.setVisibility(View.VISIBLE);
-							}else{
-								noVideos.setVisibility(View.GONE);
-							}
-						}catch (Exception e) {
-							// TODO: handle exception
-						}
+//						try{
+//							myHandler.sendEmptyMessage(SETADAPTER);
+//							if(mList.size() == 0){
+//								noVideos.setVisibility(View.VISIBLE);
+//							}else{
+//								noVideos.setVisibility(View.GONE);
+//							}
+//						}catch (Exception e) {
+//							e.printStackTrace();
+//						}
 					}
 
 				}.execute();
 			}
 			
+			@SuppressWarnings("unused")
 			@Override
 			public void onFirstRefresh() {
-				// TODO Auto-generated method stub
 				Intent intent = getIntent();
 		        dev = (NodeDetails) intent.getSerializableExtra("Device");
 		        client = new InviteUtils(dev);
@@ -299,111 +294,149 @@ public class VideoList extends ListActivity implements OnItemClickListener,ICons
 				isNewVer = checkDevVer();
 				Log.e("isNewVer", "isNewVer:"+isNewVer);
 				mList = new ArrayList<VODRecord>();
-				if(!isNewVer){
-					int round = 6;
-	//				int ret = 0;
-					try{
-	//			        mSoapManager = SoapManager.getInstance();
-	//			        mResponse = mSoapManager.getLoginResponse();
-				        Log.e("---------->>>>", "0");
-			        	Log.e("---------->>>>", "0.1");
-			        	
-			        	//----
-			        	SimpleDateFormat foo = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-			        	foo.setTimeZone(TimeZone.getTimeZone("UTC"));
-			            Date endDate = new Date();
-			            Date startDate = new Date(System.currentTimeMillis() - 10 * 24 * 60 * 60 * 1000);
-			            lastRefreshEndTime = foo.format(endDate);
-			            lastRefreshStartTime = foo.format(startDate);
-			            //----
-			            for(int i = 0 ; i < round ; i++){
-			            	mList = utils.getVideoList(client, lastRefreshStartTime,lastRefreshEndTime);
-			            	if(mList.size() == 0){
-			            		Date newStartDate = TimeTransform.StringToDate(lastRefreshStartTime);
-				        		Date newEndDate = TimeTransform.StringToDate(lastRefreshEndTime);
-				        		lastRefreshStartTime = TimeTransform.reduceTenDays(newStartDate);
-				        		lastRefreshEndTime = TimeTransform.reduceTenDays(newEndDate);
-				            }else{
-				            	break;
-				            }
-		            	}
-			            
-			        }catch (Exception e) {
-						// TODO: handle exception
-					}
-				}else{
-					//device is new version
-					Log.e("vedioList","is new version");
-					SimpleDateFormat foo = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-					foo.setTimeZone(TimeZone.getTimeZone("UTC"));
-		            Date endDate = new Date();
-		            Date begDate = new Date(1970 - 1900, 1 - 1, 1, 0, 0, 0);
-		            lastRefreshEndTime = foo.format(endDate);
-		            lastRefreshStartTime = foo.format(begDate);
-		            
-		            mList = utils.getNewVerVideoList(client, lastRefreshStartTime,lastRefreshEndTime);
-		            
-				}
 				
-				adapter.mAdapterList = mList;
-	            myHandler.sendEmptyMessage(SETADAPTER);
-	            myHandler.sendEmptyMessage(SHOWNOVIDEOIMG);
+				
+				getStartEndTime();
+				playMgr.getRecordFiles(lastRefreshStartTime, lastRefreshEndTime);
+				
+//				if(!isNewVer || true){
+//					int round = 6;
+//	//				int ret = 0;
+//					try{
+//	//			        mSoapManager = SoapManager.getInstance();
+//	//			        mResponse = mSoapManager.getLoginResponse();
+//				        Log.e("---------->>>>", "0");
+//			        	Log.e("---------->>>>", "0.1");
+//			        	
+//			        	//----
+//			        	SimpleDateFormat foo = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+//			        	foo.setTimeZone(TimeZone.getTimeZone("UTC"));
+//			            Date endDate = new Date();
+//			            Date startDate = new Date(System.currentTimeMillis() - 10 * 24 * 60 * 60 * 1000);
+//			            lastRefreshEndTime = foo.format(endDate);
+//			            lastRefreshStartTime = foo.format(startDate);
+//			            //----
+//			        
+////			            for(int i = 0 ; i < round ; i++){
+////			            	mList = utils.getVideoList(client, lastRefreshStartTime,lastRefreshEndTime);
+////			            	if(mList.size() == 0){
+////			            		Date newStartDate = TimeTransform.StringToDate(lastRefreshStartTime);
+////				        		Date newEndDate = TimeTransform.StringToDate(lastRefreshEndTime);
+////				        		lastRefreshStartTime = TimeTransform.reduceTenDays(newStartDate);
+////				        		lastRefreshEndTime = TimeTransform.reduceTenDays(newEndDate);
+////				            }else{
+////				            	break;
+////				            }
+////		            	}
+//			            
+//			            
+//			            
+//			            
+//			            
+//			            
+//			        }catch (Exception e) {
+//			        	e.printStackTrace();
+//					}
+//				}else{
+//					//device is new version
+//					Log.e("vedioList","is new version");
+//					SimpleDateFormat foo = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+//					foo.setTimeZone(TimeZone.getTimeZone("UTC"));
+//		            Date endDate = new Date();
+//		            Date begDate = new Date(1970 - 1900, 1 - 1, 1, 0, 0, 0);
+//		            lastRefreshEndTime = foo.format(endDate);
+//		            lastRefreshStartTime = foo.format(begDate);
+//		            
+////		            mList = utils.getNewVerVideoList(client, lastRefreshStartTime,lastRefreshEndTime);
+//		            
+//				}
+				
+//				adapter.mAdapterList = mList;
+//	            myHandler.sendEmptyMessage(SETADAPTER);
+//	            myHandler.sendEmptyMessage(SHOWNOVIDEOIMG);
 			}
 			int position = 0;
 			
 			@Override
 			public void onFootRefresh() {
-				// TODO Auto-generated method stub
 				new AsyncTask<Void, Void, Void>() {
 					protected Void doInBackground(Void... params) {
 						position = mList.size();
-						if(!isNewVer){
-							int round = 6;
-							ArrayList<VODRecord> mTemp = utils.getMoreVideoList(client, lastRefreshStartTime, lastRefreshEndTime);
-							System.out.println("foot:"+mTemp.size());
-							System.out.println("foot:"+lastRefreshStartTime+","+lastRefreshEndTime);
-							for(int i = 0 ; i < round ; i++){
-								if(mTemp.size() == 0){
-									Date newStartDate = TimeTransform.StringToDate(lastRefreshStartTime);
-					        		Date newEndDate = TimeTransform.StringToDate(lastRefreshEndTime);
-					        		lastRefreshStartTime = TimeTransform.reduceTenDays(newStartDate);
-					        		lastRefreshEndTime = TimeTransform.reduceTenDays(newEndDate);
-									mTemp = utils.getVideoList(client, lastRefreshStartTime, lastRefreshEndTime);
-									System.out.println("foot111:"+mTemp.size());
-									System.out.println("foot111:"+lastRefreshStartTime+","+lastRefreshEndTime);
-								}
-								if(mTemp.size() > 0){
-									System.out.println("foot222:"+mTemp.size());
-									System.out.println("foot222:"+lastRefreshStartTime+","+lastRefreshEndTime);
-									mList.addAll(mTemp);
-									utils.addTitleFlag(mList);
-									break;
-								}
-							}
-						}else{
-							//device is new version
-							mList.addAll(utils.getNewVerVideoList(client, lastRefreshStartTime,lastRefreshEndTime));
-						}
-						adapter.mAdapterList = mList;
+						
+						Log.e("123", "get more");
+						
+//						if(!isNewVer){
+//							int round = 6;
+//							ArrayList<VODRecord> mTemp = utils.getMoreVideoList(client, lastRefreshStartTime, lastRefreshEndTime);
+//							System.out.println("foot:"+mTemp.size());
+//							System.out.println("foot:"+lastRefreshStartTime+","+lastRefreshEndTime);
+//							for(int i = 0 ; i < round ; i++){
+//								if(mTemp.size() == 0){
+//									Date newStartDate = TimeTransform.StringToDate(lastRefreshStartTime);
+//					        		Date newEndDate = TimeTransform.StringToDate(lastRefreshEndTime);
+//					        		lastRefreshStartTime = TimeTransform.reduceTenDays(newStartDate);
+//					        		lastRefreshEndTime = TimeTransform.reduceTenDays(newEndDate);
+//									mTemp = utils.getVideoList(client, lastRefreshStartTime, lastRefreshEndTime);
+//									System.out.println("foot111:"+mTemp.size());
+//									System.out.println("foot111:"+lastRefreshStartTime+","+lastRefreshEndTime);
+//								}
+//								if(mTemp.size() > 0){
+//									System.out.println("foot222:"+mTemp.size());
+//									System.out.println("foot222:"+lastRefreshStartTime+","+lastRefreshEndTime);
+//									mList.addAll(mTemp);
+//									utils.addTitleFlag(mList);
+//									break;
+//								}
+//							}
+//						}else{
+//							//device is new version
+//							mList.addAll(utils.getNewVerVideoList(client, lastRefreshStartTime,lastRefreshEndTime));
+//						}
+//						adapter.mAdapterList = mList;
 //						position = mList.size()/2;
 						return null;
 					}
 
 					@Override
 					protected void onPostExecute(Void result) {
-						try{
-							adapter.notifyDataSetChanged();
-							mListView.onFootRefreshComplete();
-							mListView.setSelection(position);
-						}catch (Exception e) {
-							// TODO: handle exception
-						}
+//						try{
+//							adapter.notifyDataSetChanged();
+//							mListView.onFootRefreshComplete();
+//							mListView.setSelection(position);
+//						}catch (Exception e) {
+//							e.printStackTrace();
+//						}
 					}
 
 				}.execute();
 			}
 		});
     }
+	
+	private void showGetRecodeFileListRes(){
+		try{
+			myHandler.sendEmptyMessage(SETADAPTER);
+			pd.dismiss();
+			if(mList.size() == 0){
+				noVideos.setVisibility(View.VISIBLE);
+			}else{
+				noVideos.setVisibility(View.GONE);
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
+	private void getStartEndTime(){
+		SimpleDateFormat foo = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		foo.setTimeZone(TimeZone.getTimeZone("UTC"));
+		Date endDate = new Date();
+        Date startDate = new Date(System.currentTimeMillis() - 10 * 24 * 60 * 60 * 1000);
+        lastRefreshEndTime = foo.format(endDate);
+        lastRefreshStartTime = foo.format(startDate);
+	}
 	
 	private boolean checkDevVer(){
 		GetDevVerReq getDevVerReq = new GetDevVerReq(SoapManager.getInstance().getLoginResponse().getAccount(),SoapManager.getInstance().getLoginResponse().getLoginSession(),dev.getDevID());
@@ -415,7 +448,6 @@ public class VideoList extends ListActivity implements OnItemClickListener,ICons
     private Handler myHandler = new Handler(){
     	@Override
     	public void handleMessage(Message msg) {
-    		// TODO Auto-generated method stub
     		super.handleMessage(msg);
     		if(msg.what == SETADAPTER){
 //    			setListAdapter(adapter);
@@ -438,7 +470,8 @@ public class VideoList extends ListActivity implements OnItemClickListener,ICons
 				}
     		}else if(msg.what == MSG_RECORD_LIST_GET){
 				mList = playMgr.getMList();
-				myHandler.sendEmptyMessage(SETADAPTER);
+				adapter.mAdapterList = mList;
+				showGetRecodeFileListRes();
 				myHandler.sendEmptyMessage(SHOWNOVIDEOIMG);
     			
 			}
@@ -461,25 +494,21 @@ public class VideoList extends ListActivity implements OnItemClickListener,ICons
 
         @Override
         public int getCount() {
-            // TODO Auto-generated method stub
             return mAdapterList == null ? 0 : mAdapterList.size();
         }
 
         @Override
         public Object getItem(int position) {
-            // TODO Auto-generated method stub
             return mAdapterList == null ? null : mAdapterList.get(position);
         }
 
         @Override
         public long getItemId(int position) {
-            // TODO Auto-generated method stub
             return position;
         }
 
 		@Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            // TODO Auto-generated method stub
 //        	Log.e("---------->>>>", "getView");
 //        	System.out.println("position"+position);
 			record = (VODRecord) getItem(position);
@@ -522,7 +551,6 @@ public class VideoList extends ListActivity implements OnItemClickListener,ICons
     
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-        // TODO Auto-generated method stub
     	adapter.mAdapterList.get((int)arg3).setWatched(true);
         Intent intent = new Intent(this, PlayerActivity.class);
         intent.putExtra("arg", adapter.mAdapterList.get((int)arg3));
@@ -534,7 +562,6 @@ public class VideoList extends ListActivity implements OnItemClickListener,ICons
     
     @Override
     protected void onStop() {
-    	// TODO Auto-generated method stub
     	Log.e("VIDEO LIST", "onStop");
     	super.onStop();
     	//adapter.map.clear();
@@ -542,21 +569,18 @@ public class VideoList extends ListActivity implements OnItemClickListener,ICons
     
     @Override
     protected void onDestroy() {
-    	// TODO Auto-generated method stub
     	super.onDestroy();
     	mActivities.removeActivity("VideoList");
     }
     
     @Override
     protected void onRestart() {
-    	// TODO Auto-generated method stub
     	Log.e("VIDEO LIST", "onRestart");
     	super.onRestart();
     }
     
     @Override
     protected void onPause() {
-    	// TODO Auto-generated method stub
     	Log.e("VIDEO LIST", "onPause");
     	super.onPause();
 //    	for(Activity a:mActivities.getmActivityList()){

@@ -660,8 +660,8 @@ JNIEXPORT jboolean JNICALL Java_com_howell_jni_JniUtil_readyPlayLive
 }
 
 JNIEXPORT jboolean JNICALL Java_com_howell_jni_JniUtil_readyPlayPlayback
-(JNIEnv *, jclass){
-
+(JNIEnv *env, jclass cls){
+	return Java_com_howell_jni_JniUtil_readyPlayLive(env,cls);
 }
 
 JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_playView

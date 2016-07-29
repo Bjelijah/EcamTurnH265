@@ -30,7 +30,10 @@ public class JsonUtil {
 			childchild.put("mode", subscribe.getMode());
 			childchild.put("channel", 0);
 			childchild.put("stream", subscribe.getIs_sub());
-
+			if(subscribe.getStartTime()!=null && subscribe.getEndTime()!=null){
+				childchild.put("begin", subscribe.getStartTime());
+				childchild.put("end", subscribe.getEndTime());
+			}
 
 			JSONObject child = null;
 			child = new JSONObject();

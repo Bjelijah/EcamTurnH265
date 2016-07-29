@@ -197,6 +197,8 @@ public class PlayerManager implements IConst{
 		if(JniUtil.readyPlayLive()){
 			Log.i("123", "play view cam");
 			Subscribe s = new Subscribe(sessionID, (int)getDialogId(), PlatformAction.getInstance().getDeviceId(), "live",is_sub);
+			s.setStartTime(null);
+			s.setEndTime(null);
 			String jsonStr = JsonUtil.subScribeJson(s);
 			Log.i("123", "jsonStr="+jsonStr);
 			JniUtil.transSubscribe(jsonStr, jsonStr.length());
@@ -206,6 +208,27 @@ public class PlayerManager implements IConst{
 		}else{
 			Log.e("123", "ready play live error");
 		}	
+	}
+	
+	public void playBackCam(int is_sub,String startTime,String endTime){
+		if(JniUtil.readyPlayPlayback()){
+			Log.i("123", "play back cam");
+			Subscribe s = new Subscribe(sessionID, (int)getDialogId(), PlatformAction.getInstance().getDeviceId(), "playback",is_sub);
+			s.setStartTime(startTime);
+			s.setEndTime(endTime);
+			String jsonStr = JsonUtil.subScribeJson(s);
+			Log.i("123", "jsonStr = "+jsonStr);
+			JniUtil.playView();
+			startTimerTask();
+		}else{
+			Log.e("123", "read play playback error");
+		}
+		
+		
+	}
+	
+	public void stopPlaybackCam(){
+		stopViewCam();
 	}
 	
 	public void stopViewCam(){

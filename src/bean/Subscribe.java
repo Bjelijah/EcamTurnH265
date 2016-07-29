@@ -6,6 +6,8 @@ public class Subscribe {
 	String deviceId;
 	String mode;
 	int is_sub;
+	String startTime;
+	String endTime;
 	public Subscribe(){}
 	
 	public Subscribe(String sessionId,int dialogId,String deviceId,String mode,int is_sub){
@@ -18,6 +20,22 @@ public class Subscribe {
 	
 	
 	
+	public String getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
+
+	public String getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
+	}
+
 	public int getIs_sub() {
 		return is_sub;
 	}

@@ -219,6 +219,7 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
             mRecord = (VODRecord) intent.getSerializableExtra("arg");
             dev = (NodeDetails) intent.getSerializableExtra("nodeDetails");
             playback = true;
+            mPlayerHandler.setRecord(mRecord);
         }
 		
         mSoapManger = SoapManager.getInstance();
@@ -790,6 +791,7 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
     	private int progress,progressTemp;	//progressTemp：记录时标未溢出时的拖动条播放长度
     	private long firstBreakFrameTime;	//记录时标溢出时的第一帧数据的时标
     	Context context;
+    	private VODRecord record;
 		public PlayerHandler() {
 			super();
 			this.isTimeStampBreak = false;
@@ -800,6 +802,10 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 
 		public void setContext(Context context) {
 			this.context = context;
+		}
+		
+		public void setRecord(VODRecord record){
+			this.record = record;
 		}
 		@SuppressWarnings("unused")
 		@Override
@@ -957,7 +963,18 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 			}
 			
 			if(msg.what == MSG_LOGIN_CAM_OK){
-				playMgr.playViewCam(0);
+				if(playback){
+					String _startTime = record.getStartTime();
+					String _endTime = record.getEndTime(); 
+					
+					
+					
+					playMgr.playBackCam(0, _startTime, _endTime);
+				}else{
+					playMgr.playViewCam(0);
+				}
+				
+				
 				AudioAction.getInstance().playAudio();
 			}
 			
@@ -1362,10 +1379,16 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 //					}
 //					ret = client.Replay(isPlayBack, replayStartTime, endTime, 0);
 					
-					playMgr.stopViewCam();
-					playMgr.playViewCam(0);
+					if (playback) {
+						playMgr.stopPlaybackCam();
+						String startTime = mRecord.getStartTime();
+						String endTime = mRecord.getEndTime();
+						playMgr.playBackCam(0, startTime, endTime);
+					}else{
+						playMgr.stopViewCam();
+						playMgr.playViewCam(0);
+					}
 					ret = true;
-					
 					return null;
 				}
 				
@@ -1401,9 +1424,19 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 //					}
 //					ret = client.Replay(isPlayBack, replayStartTime, endTime, 1);
 					
-					playMgr.stopViewCam();
-					playMgr.playViewCam(1);
+					if (playback) {
+						playMgr.stopPlaybackCam();
+						String startTime = mRecord.getStartTime();
+						String endTime = mRecord.getEndTime();
+						playMgr.playBackCam(1, startTime, endTime);
+					}else{
+						playMgr.stopViewCam();
+						playMgr.playViewCam(1);
+						
+					}
 					ret = true;
+					
+				
 					
 					return null;
 				}
