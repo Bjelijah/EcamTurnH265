@@ -211,6 +211,7 @@ public class PlayerManager implements IConst{
 	}
 	
 	public void playBackCam(int is_sub,String startTime,String endTime){
+		Log.i("123", "playbackcam   startTime="+startTime+" endtime="+endTime);
 		if(JniUtil.readyPlayPlayback()){
 			Log.i("123", "play back cam");
 			Subscribe s = new Subscribe(sessionID, (int)getDialogId(), PlatformAction.getInstance().getDeviceId(), "playback",is_sub);
@@ -223,8 +224,6 @@ public class PlayerManager implements IConst{
 		}else{
 			Log.e("123", "read play playback error");
 		}
-		
-		
 	}
 	
 	public void stopPlaybackCam(){
