@@ -723,9 +723,7 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 		int buffer_size = AudioTrack.getMinBufferSize(8000, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
 		mAudioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 8000, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, buffer_size*8, AudioTrack.MODE_STREAM);
 		mAudioData = new byte[buffer_size*8];
-		
 		nativeAudioInit();
-		
 		mAudioTrack.play();
 	}
 	
@@ -774,8 +772,7 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 		        inviteRet = PlayerActivity.client.InviteLive(stream);
 		        talkManger = new TalkManager(client.getHandle());
 		    }
-			System.out.println("finish invite live");
-			
+			System.out.println("finish invite live");		
 		}
 	}
 	
@@ -896,8 +893,7 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 			}
 //			if(msg.what == TIMEOUT){
 //				if(!stopSendMessage && YV12Renderer.time == 0){
-//					MessageUtiles.postNewUIDialog(PlayerActivity.getContext(), PlayerActivity.getContext().getString(R.string.link_timeout), PlayerActivity.getContext().getString(R.string.ok),0);
-//					
+//					MessageUtiles.postNewUIDialog(PlayerActivity.getContext(), PlayerActivity.getContext().getString(R.string.link_timeout), PlayerActivity.getContext().getString(R.string.ok),0);				
 //				}
 //			}
 			if (msg.what == POSTERROR) {
@@ -966,15 +962,15 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 				if(playback){
 					String _startTime = record.getStartTime();
 					String _endTime = record.getEndTime(); 
+					String _startTimeZone = record.getTimeZoneStartTime();
+					String _endTimeZone = record.getTimeZoneEndTime();
 					
-					
-					
-					playMgr.playBackCam(0, _startTime, _endTime);
+					Log.i("123", "startTIme="+_startTime+" endTime="+_endTime+" startZone="+_startTimeZone+
+							" endTimeZone"+_endTimeZone);
+					playMgr.playBackCam(0, _startTimeZone, _endTimeZone);
 				}else{
 					playMgr.playViewCam(0);
 				}
-				
-				
 				AudioAction.getInstance().playAudio();
 			}
 			
@@ -1383,7 +1379,11 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 						playMgr.stopPlaybackCam();
 						String startTime = mRecord.getStartTime();
 						String endTime = mRecord.getEndTime();
-						playMgr.playBackCam(0, startTime, endTime);
+						String startTimeZone = mRecord.getTimeZoneStartTime();
+						String endTimeZone = mRecord.getTimeZoneEndTime();
+						Log.i("123", "startTIme="+startTime+" endTime="+endTime+" startZone="+startTimeZone+
+								" endTimeZone"+endTimeZone);
+						playMgr.playBackCam(0, startTimeZone, endTimeZone);
 					}else{
 						playMgr.stopViewCam();
 						playMgr.playViewCam(0);
@@ -1428,16 +1428,17 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 						playMgr.stopPlaybackCam();
 						String startTime = mRecord.getStartTime();
 						String endTime = mRecord.getEndTime();
-						playMgr.playBackCam(1, startTime, endTime);
+						String startTimeZone = mRecord.getTimeZoneStartTime();
+						String endTimeZone = mRecord.getTimeZoneEndTime();
+						Log.i("123", "startTIme="+startTime+" endTime="+endTime+" startZone="+startTimeZone+
+								" endTimeZone"+endTimeZone);
+						playMgr.playBackCam(1, startTimeZone, endTimeZone);
 					}else{
 						playMgr.stopViewCam();
 						playMgr.playViewCam(1);
 						
 					}
 					ret = true;
-					
-				
-					
 					return null;
 				}
 				
