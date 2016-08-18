@@ -21,7 +21,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
-import bean.GetRecordedFilesBean;
+import bean.TurnGetRecordedFilesBean;
 import bean.Subscribe;
 
 public class PlayerManager implements IConst{
@@ -247,7 +247,7 @@ public class PlayerManager implements IConst{
 			protected Void doInBackground(String... params) {
 				// TODO Auto-generated method stub
 				String deviceId = PlatformAction.getInstance().getDevice_id();
-				GetRecordedFilesBean bean = new GetRecordedFilesBean(deviceId, 0, params[0], params[1]);
+				TurnGetRecordedFilesBean bean = new TurnGetRecordedFilesBean(deviceId, 0, params[0], params[1]);
 				String jsonStr = JsonUtil.getRecordFilesJson(bean);
 				JniUtil.transGetRecordFiles(jsonStr, jsonStr.length());
 				return null;

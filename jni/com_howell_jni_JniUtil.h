@@ -279,21 +279,43 @@ JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transSubscribe
 JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transUnsubscribe
   (JNIEnv *, jclass);
 
-
+/*
+ * Class:     com_howell_jni_JniUtil
+ * Method:    catchPic
+ * Signature: (Ljava/lang/String;)V
+ */
 JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_catchPic
   (JNIEnv *, jclass, jstring);
 
-
+/*
+ * Class:     com_howell_jni_JniUtil
+ * Method:    transGetStreamLenSomeTime
+ * Signature: ()I
+ */
 JNIEXPORT jint JNICALL Java_com_howell_jni_JniUtil_transGetStreamLenSomeTime
   (JNIEnv *, jclass);
 
+/*
+ * Class:     com_howell_jni_JniUtil
+ * Method:    transGetCam
+ * Signature: (Ljava/lang/String;I)V
+ */
 JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transGetCam
   (JNIEnv *, jclass, jstring, jint);
 
+/*
+ * Class:     com_howell_jni_JniUtil
+ * Method:    transGetRecordFiles
+ * Signature: (Ljava/lang/String;I)V
+ */
 JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transGetRecordFiles
   (JNIEnv *, jclass, jstring, jint);
 
-
+/*
+ * Class:     com_howell_jni_JniUtil
+ * Method:    transSetCrt
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+ */
 JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transSetCrt
   (JNIEnv *, jclass, jstring, jstring, jstring);
 
@@ -305,6 +327,13 @@ JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transSetCrt
 JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transSetCrtPaht
   (JNIEnv *, jclass, jstring, jstring, jstring);
 
+/*
+ * Class:     com_howell_jni_JniUtil
+ * Method:    turnInputViewData
+ * Signature: ([BI)V
+ */
+JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_turnInputViewData
+  (JNIEnv *, jclass, jbyteArray, jint);
 
 #ifdef __cplusplus
 }

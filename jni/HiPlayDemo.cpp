@@ -670,7 +670,6 @@ JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_playView
 	if(res->play_handle<0)return;
 	res->is_exit = 0;
 	hwplay_play(res->play_handle);
-
 }
 
 JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_stopView
@@ -968,6 +967,8 @@ int on_my_data_fun(int type,const char *data,int len){
 	int ret = hwplay_input_data(res->play_handle, data ,len);
 	LOGI("input data data ret=%d",ret);
 	return 0;
+
+	//Fixme
 }
 
 
@@ -1161,3 +1162,28 @@ JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transSetCrtPaht
 	env->ReleaseStringUTFChars(keyPath,_keyPath);
 }
 
+JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_turnInputViewData
+(JNIEnv *env, jclass, jbyteArray byteArray, jint len){
+	if(res == NULL){
+		LOGE("res == null");
+		return ;
+	}
+	if(res->is_exit == 1){
+		LOGE("res is exit");
+		return ;
+	}
+	if(res->play_handle==-1){
+		LOGE("res play heandle = -1");
+		return ;
+	}
+
+	jbyte * data ;
+	data = env->GetByteArrayElements(byteArray,0);
+
+	if(g_transMgr!=NULL){
+		g_transMgr->transDataLen += len;
+	}
+	int ret = hwplay_input_data(res->play_handle,(const char*) data ,len);
+	LOGI("input data data ret=%d",ret);
+	env->ReleaseByteArrayElements(byteArray,data,0);
+}

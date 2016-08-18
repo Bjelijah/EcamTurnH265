@@ -17,7 +17,7 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import bean.GetRecordedFilesBean;
+import bean.TurnGetRecordedFilesBean;
 
 public class PlatformAction implements IConst{
 	
@@ -83,6 +83,14 @@ public class PlatformAction implements IConst{
 	}
 	public String getDeviceId(){
 		return device_id;
+	}
+	
+	public String getCurSelDeviceId(){
+		return getDeviceId();
+	}
+	
+	public void setCurSelDeviceId(String deviceId){
+		setDevice_id(deviceId);
 	}
 	
 	public void setTurnServerIP(String turnServerIp){

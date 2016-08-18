@@ -1,6 +1,6 @@
 package bean;
 
-public class GetRecordedFilesBean {
+public class TurnGetRecordedFilesBean {
 	String deviceId;
 	int channel;
 	String begin;
@@ -29,14 +29,14 @@ public class GetRecordedFilesBean {
 	public void setEnd(String end) {
 		this.end = end;
 	}
-	public GetRecordedFilesBean(String deviceId, int channel, String begin, String end) {
+	public TurnGetRecordedFilesBean(String deviceId, int channel, String begin, String end) {
 		super();
 		this.deviceId = deviceId;
 		this.channel = channel;
 		this.begin = begin;
 		this.end = end;
 	}
-	public GetRecordedFilesBean() {
+	public TurnGetRecordedFilesBean() {
 		super();
 	}
 	

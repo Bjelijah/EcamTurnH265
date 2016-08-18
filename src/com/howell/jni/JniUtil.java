@@ -50,20 +50,19 @@ public class JniUtil {
 	public static native void transSetCallBackObj(Object o,int flag);
 	public static native void transSetCallbackMethodName(String methodName,int flag);
 	public static native void transDeinit();
-	
 	public static native void transConnect(int type,String id,String name,String pwd);
 	public static native void transDisconnect();
-	
 	public static native void transSubscribe(String jsonStr,int jsonLen);
 	public static native void transUnsubscribe();
-
 	public static native void catchPic(String path);
 	public static native int transGetStreamLenSomeTime();
 	public static native void transGetCam(String jsonStr,int jsonLen);
 	public static native void transGetRecordFiles(String jsonStr,int jsonLen);
-	
 	public static native void transSetCrt(String ca,String client,String key);
 	public static native void transSetCrtPaht(String caPath,String clientPath,String keyPath);
+	
+	//turn
+	public static native void turnInputViewData(byte [] data,int len);
 	
 	
 }

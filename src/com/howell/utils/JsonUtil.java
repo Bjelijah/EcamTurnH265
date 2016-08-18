@@ -9,9 +9,10 @@ import org.json.JSONObject;
 import com.howell.entityclass.VODRecord;
 
 import android.util.Log;
-import bean.GetCamBean;
-import bean.GetRecordedFilesBean;
+import bean.TurnGetCamBean;
+import bean.TurnGetRecordedFilesBean;
 import bean.Subscribe;
+import bean.TurnConnectAckBean;
 
 public class JsonUtil {
 
@@ -48,7 +49,7 @@ public class JsonUtil {
 		return object.toString();
 	}
 
-	public static String getCamJson(GetCamBean bean){
+	public static String getCamJson(TurnGetCamBean bean){
 
 		JSONObject object = null;
 
@@ -64,7 +65,7 @@ public class JsonUtil {
 		return object.toString();
 	}
 
-	public static String getRecordFilesJson(GetRecordedFilesBean bean){
+	public static String getRecordFilesJson(TurnGetRecordedFilesBean bean){
 
 		JSONObject object = null;
 		object = new JSONObject();
@@ -103,5 +104,7 @@ public class JsonUtil {
 		
 		return list;
 	}
+	
+
 
 }

@@ -1,12 +1,12 @@
 package bean;
 
-public class GetCamBean {
+public class TurnGetCamBean {
 	String userName;
 	String password;
 	
-	public GetCamBean(){}
+	public TurnGetCamBean(){}
 	
-	public GetCamBean(String userName, String password) {
+	public TurnGetCamBean(String userName, String password) {
 		super();
 		this.userName = userName;
 		this.password = password;

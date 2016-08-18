@@ -20,12 +20,29 @@ public interface IConst {
 	
 	
 	
-	final static int MSG_LOGIN_OK 	=  0xa0;
-	final static int MSG_LOGIN_FAIL = 0xa1;
-	final static int MSG_CONNECT_OK = 0xa2;
+	final static int MSG_LOGIN_OK 				= 0xa0;
+	final static int MSG_LOGIN_FAIL 			= 0xa1;
+	final static int MSG_CONNECT_OK 			= 0xa2;
+	final static int MSG_SOCK_CONNECT 			= 0xa3;
+	final static int MSG_TURN_CONNECT_OK 		= 0xa4;
+	final static int MSG_TURN_CONNECT_FAIL 		= 0xa5;
+	final static int MSG_TURN_DISCONNECT_OK		= 0xa6;
+	final static int MSG_TURN_DISCONNECT_FAIL	= 0xa7;
+	final static int MSG_TURN_SUBSCRIBE_OK		= 0xa8;
+	final static int MSG_TURN_SUBSCRIBE_FAIL	= 0xa9;
+	final static int MSG_TURN_DISSUBSCRIBE_OK	= 0xaa;
+	final static int MSG_TURN_DISSUBSCRIBE_FAIL	= 0xab;
+	final static int MSG_TURN_GETCAMERA_OK		= 0xac;
+	final static int MSG_TURN_GETCAMERA_FAIL	= 0xad;
+	final static int MSG_TURN_GETRECORD_OK		= 0xae;
+	final static int MSG_TURN_GETRECORD_FAIL	= 0xaf;
+	final static int MSG_TURN_PTZ_OK			= 0xb0;
+	final static int MSG_TURN_PTZ_FAIL			= 0xb1;
+	
+	
 	
 	//videoList
-	final static int MSG_RECORD_LIST_GET = 0xb0;
+	final static int MSG_RECORD_LIST_GET = 0xc0;
 	
 	
 	
