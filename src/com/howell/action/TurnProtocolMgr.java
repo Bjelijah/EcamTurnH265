@@ -70,8 +70,9 @@ public class TurnProtocolMgr implements IConst{
 		readbuf.clear();
 		int type = 101;
 		String deviceId =Utils.getPhoneUid(context);
-		
-		TurnConnectBean bean = new TurnConnectBean(type, deviceId, TEST_ACCOUNT, TEST_PASSWORD);
+		String userName = PlatformAction.getInstance().getAccount();
+		String password = PlatformAction.getInstance().getPassword();
+		TurnConnectBean bean = new TurnConnectBean(type, deviceId, userName, password);
 		String jsonStr = TurnJsonUtil.getTurnConnectJsonStr(bean);
 		Log.i("123", "json str="+jsonStr+"   size="+jsonStr.length());
 		
@@ -292,7 +293,10 @@ public class TurnProtocolMgr implements IConst{
 		Log.i("123", "code ="+bean.getCode()+" sessionid="+bean.getSessionId());
 		if(bean.getCode()!=200){
 			//fail
-			handler.sendEmptyMessage(MSG_TURN_CONNECT_FAIL);
+			Message msg = new Message();
+			msg.what = MSG_TURN_CONNECT_FAIL;
+			msg.obj = bean.getDetail();
+			handler.sendMessage(msg);
 		}else{
 			//success
 			sessionID = bean.getSessionId();
@@ -303,7 +307,10 @@ public class TurnProtocolMgr implements IConst{
 	private void doDisConnectAck(TurnDisConnectAckBean bean){
 		if (bean==null) throw new NullPointerException();
 		if (bean.getCode()!=200) {
-			handler.sendEmptyMessage(MSG_TURN_DISCONNECT_FAIL);
+			Message msg = new Message();
+			msg.what = MSG_TURN_DISCONNECT_FAIL;
+			msg.obj = bean.getDetail();
+			handler.sendMessage(msg);
 		}else{
 			handler.sendEmptyMessage(MSG_TURN_DISCONNECT_OK);
 		}
@@ -312,7 +319,10 @@ public class TurnProtocolMgr implements IConst{
 	private void doSubscribeAck(TurnSubScribeAckBean bean){
 		if (bean==null) throw new NullPointerException();
 		if (bean.getCode()!=200) {
-			handler.sendEmptyMessage(MSG_TURN_SUBSCRIBE_FAIL);
+			Message msg = new Message();
+			msg.what = MSG_TURN_SUBSCRIBE_FAIL;
+			msg.obj = bean.getDetail();
+			handler.sendMessage(msg);
 		}else{
 			subscribeID = bean.getSubscribeId();
 			bSubscribe = true;
@@ -327,7 +337,10 @@ public class TurnProtocolMgr implements IConst{
 	private void doDisSubscribeAck(TurnDisSubscribeAckBean bean){
 		if (bean==null) throw new NullPointerException();
 		if (bean.getCode()!=200) {
-			handler.sendEmptyMessage(MSG_TURN_DISSUBSCRIBE_FAIL);
+			Message msg = new Message();
+			msg.what = MSG_TURN_DISSUBSCRIBE_FAIL;
+			msg.obj = bean.getDetail();
+			handler.sendMessage(msg);
 		}else{
 			bSubscribe = false;
 			if (pushThread!=null) {
@@ -340,7 +353,10 @@ public class TurnProtocolMgr implements IConst{
 	private void doRecordedFileAck(TurnGetRecordedFileAckBean bean){
 		if (bean==null) throw new NullPointerException();
 		if (bean.getCode()!=200) {
-			handler.sendEmptyMessage(MSG_TURN_GETRECORD_FAIL);
+			Message msg = new Message();
+			msg.what = MSG_TURN_GETRECORD_FAIL;
+			msg.obj = bean.getDetail();
+			handler.sendMessage(msg);
 		}else{
 			Message msg = new Message();
 			msg.what = MSG_TURN_GETRECORD_OK;
@@ -353,7 +369,10 @@ public class TurnProtocolMgr implements IConst{
 	private void doPtzAck(TurnPtzCtrlAckBean bean){
 		if (bean==null) throw new NullPointerException();
 		if (bean.getCode()!=200) {
-			handler.sendEmptyMessage(MSG_TURN_PTZ_FAIL);
+			Message msg = new Message();
+			msg.what = MSG_TURN_PTZ_FAIL;
+			msg.obj = bean.getDetail();
+			handler.sendMessage(msg);
 		}else{
 			handler.sendEmptyMessage(MSG_TURN_PTZ_OK);
 		}
@@ -370,7 +389,10 @@ public class TurnProtocolMgr implements IConst{
 	private void doGetCameraAck(TurnGetCamAckBean bean){
 		if (bean==null) throw new NullPointerException();
 		if (bean.getCode() != 200) {
-			handler.sendEmptyMessage(MSG_TURN_GETCAMERA_FAIL);
+			Message msg = new Message();
+			msg.what = MSG_TURN_GETCAMERA_FAIL;
+			msg.obj = bean.getDetail();
+			handler.sendMessage(msg);
 		}else{
 			Message message = new Message();
 			message.what = MSG_TURN_GETCAMERA_OK;
@@ -409,7 +431,7 @@ public class TurnProtocolMgr implements IConst{
 	}
 	
 	
-	class PushThread extends Thread{
+	private class PushThread extends Thread{
 		private Queue<PushData> pushDataQueue =  new ArrayBlockingQueue<PushData>(25);
 		public void pushData(byte [] data,int len){
 			pushDataQueue.offer(new PushData(data, len));
@@ -438,7 +460,7 @@ public class TurnProtocolMgr implements IConst{
 		}
 	}
 	
-	class PushData{
+	private class PushData{
 		byte [] data;
 		int len;
 		public byte[] getData() {

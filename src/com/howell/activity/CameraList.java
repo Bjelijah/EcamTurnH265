@@ -638,6 +638,13 @@ public class CameraList extends ListActivity implements Observer{
 			    	}
 					System.out.println("tag:"+arg0.getTag().toString());
 					System.out.println(((NodeDetails) getItem(Integer.valueOf(arg0.getTag().toString()))).getName());
+					
+					int index = Integer.valueOf(arg0.getTag().toString());
+					String deviceID = list.get(index).getDevID();
+					NodeDetails node = (NodeDetails)getItem(index);
+					PlatformAction.getInstance().setDeviceID(deviceID);
+			        PlatformAction.getInstance().setDevice_id(index);
+			        PlatformAction.getInstance().setCurSelNode(node);
 					Intent intent = new Intent(CameraList.this, VideoList.class);
 		            intent.putExtra("Device", ((NodeDetails) getItem(Integer.valueOf(arg0.getTag().toString()))));
 		            startActivity(intent);
@@ -647,7 +654,10 @@ public class CameraList extends ListActivity implements Observer{
 			    		MessageUtiles.postToast(getApplication(), getResources().getString(R.string.not_online_message),2000);
 			    		return;
 			    	}
-					
+					int index = Integer.valueOf(arg0.getTag().toString());
+					String deviceID = list.get(index).getDevID();
+					PlatformAction.getInstance().setDeviceID(deviceID);
+			        PlatformAction.getInstance().setDevice_id(index);
 					
 					Intent intent = new Intent(CameraList.this,DeviceSetActivity.class);
 					intent.putExtra("Device", (NodeDetails) getItem(Integer.valueOf(arg0.getTag().toString())));
@@ -683,8 +693,14 @@ public class CameraList extends ListActivity implements Observer{
 			        } else {
 			            Intent intent = new Intent(CameraList.this, PlayerActivity.class);
 			            int index = Integer.valueOf(arg0.getTag().toString());
+			            NodeDetails node = (NodeDetails)getItem(index);
+						String deviceID = list.get(index).getDevID();
+						PlatformAction.getInstance().setDeviceID(deviceID);
 			            PlatformAction.getInstance().setDevice_id(index);
+			            PlatformAction.getInstance().setCurSelNode(node);
+			            
 			            intent.putExtra("arg", ((NodeDetails) getItem(Integer.valueOf(arg0.getTag().toString()))));
+			            intent.putExtra("bPlayBack", false);
 			            startActivity(intent);
 			        }
 				}else if(arg0.getId() == R.id.ib_camera_list_back){

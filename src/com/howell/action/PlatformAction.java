@@ -3,6 +3,7 @@ package com.howell.action;
 import java.util.List;
 
 import com.howell.entityclass.Device;
+import com.howell.entityclass.NodeDetails;
 import com.howell.jni.JniUtil;
 import com.howell.protocol.GetNATServerReq;
 import com.howell.protocol.GetNATServerRes;
@@ -13,6 +14,7 @@ import com.howell.utils.DecodeUtils;
 import com.howell.utils.IConst;
 import com.howell.utils.JsonUtil;
 
+import android.R.string;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
@@ -35,12 +37,26 @@ public class PlatformAction implements IConst{
 	private String turnServerIp = null;
 	private int turnServerPort = -1;
 	private String device_id = null;
-	
+	private String deviceID = null;
 	private String account = null;
 	private String password= null;
 	
-	
+	private NodeDetails curSelNode= null;
 	List<Device> deviceList = null;
+	
+	public void setCurSelNode(NodeDetails node){
+		this.curSelNode = node;
+	}
+	public NodeDetails getCurSelNode(){
+		return curSelNode;
+	}
+	
+	public void setDeviceID(String deviceID){
+		this.deviceID = deviceID;
+	}
+	public String getDeviceID(){
+		return this.deviceID;
+	}
 	
 	public List<Device> getDeviceList() {
 		return deviceList;

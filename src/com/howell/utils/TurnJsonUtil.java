@@ -67,15 +67,20 @@ public class TurnJsonUtil {
 		JSONObject obj = null;
 		int code = 0;
 		String sessionId = null;
+		String detail = null;
 		try {
 			obj = new JSONObject(jsonStr);
 			code = obj.getInt("code");
-			sessionId = obj.getString("session_id");
+			if (code!=200) {
+				detail = obj.getString("detail");
+			}else{
+				sessionId = obj.getString("session_id");
+			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 			return null;
 		}
-		return new TurnConnectAckBean(code, sessionId);
+		return new TurnConnectAckBean(code, sessionId,detail);
 	}
 	
 	public static String getTurnDisconnectJsonStr(TurnDisConnectBean bean){

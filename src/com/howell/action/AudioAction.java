@@ -75,12 +75,10 @@ public class AudioAction {
 	}    
 	
 	public void audioSoundMute(Context context,boolean bMute){
-		
 		if (mAudioManager == null) {//should just do once otherwise it will never be Unmuted
 			mAudioManager =  (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
 		}
 		mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, bMute);
-		
 	}
 	
 	

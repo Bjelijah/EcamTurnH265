@@ -212,6 +212,12 @@
             android:name="com.howell.activity.PlayerActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" />
+         <activity 
+             android:name="com.howell.activity.PlayerFragmentActivity"
+             android:configChanges="orientation|screenSize|keyboardHidden"
+             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"  />
+         
+         
         <activity
             android:name="com.howell.activity.DeviceManageActivity"
             android:screenOrientation="portrait"

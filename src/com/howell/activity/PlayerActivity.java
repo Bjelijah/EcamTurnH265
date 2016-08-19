@@ -361,13 +361,7 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 				return false;
 			}
 		});
-	    
-	    
-	    
-	    
-	    
-	    
-	    
+
 	    mCatchPicture = (ImageButton)findViewById(R.id.catch_picture);
 	    mCatchPicture.setOnClickListener(new OnClickListener() {
 				
