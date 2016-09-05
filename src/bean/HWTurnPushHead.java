@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import struct.StructClass;
 import struct.StructField;
 
+@StructClass
 public class HWTurnPushHead {
 	@StructField(order = 0)
 	byte flag;

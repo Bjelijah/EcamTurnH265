@@ -14,6 +14,7 @@ import com.howell.utils.MessageUtiles;
 
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.SurfaceTexture;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
@@ -39,6 +40,7 @@ import android.view.View.OnTouchListener;
 public class PlayerFragmentActivity extends FragmentActivity implements Callback,OnTouchListener,OnGestureListener,OnClickListener,IConst {
 	
 	private GLSurfaceView mGlView;
+	
 	private YV12Renderer mRenderer;
 	private GestureDetector mGestureDetector;
 	private LinearLayout mSurfaceIcon,mTitle;
