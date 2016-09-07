@@ -10,6 +10,7 @@ import com.howell.jni.JniUtil;
 import com.howell.utils.IConst;
 import com.howell.utils.JsonUtil;
 import com.howell.utils.SDCardUtils;
+import com.howell.utils.SharedPreferencesUtils;
 import com.howell.utils.Utils;
 
 import android.content.Context;
@@ -103,11 +104,38 @@ public class PlayerManager implements IConst{
 		turnServiceIP = PlatformAction.getInstance().getTurnServerIP();
 		turnServicePort = PlatformAction.getInstance().getTurnServerPort();
 		
-		turnServiceIP = TEST_IP;
-		turnServicePort = TEST_TURN_SERCICE_PORT;
-		
-		Log.i("123", "login cam");
+		//每次都读文件
+		String trunServer = SDCardUtils.getTurnServerInfoAndKeep(context);
+		//文件中没有  使用默认 并 保存到 文件 保存到SharedPreferences
+		if (trunServer == null) {
+			Log.i("123", "get from test ip");
+			
+			turnServiceIP = TEST_IP;
+			turnServicePort = TEST_TURN_SERCICE_PORT;
+			String tunrServerInfo = TEST_IP+":"+TEST_TURN_SERCICE_PORT;
+			SDCardUtils.saveTurnServerInfo2SD(tunrServerInfo);
+			SharedPreferencesUtils.saveTurnServerInfo(context, TEST_IP, TEST_TURN_SERCICE_PORT+"");
+			
+		}else{
+			Log.i("123", "get from file");
+			String str [] = trunServer.split(":");
+			turnServiceIP = str[0];
+			try {
+				turnServicePort = Integer.parseInt(str[1]);
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				turnServicePort = TEST_TURN_SERCICE_PORT;
+			}      
+		}
 
+//		turnServiceIP = TEST_IP;
+//		turnServicePort = TEST_TURN_SERCICE_PORT;
+		
+		Log.e("123", "login cam    turnIp="+turnServiceIP+"    trunPort="+turnServicePort);
+
+
+		
 		new AsyncTask<Void, Void, Void>(){
 
 			@Override
@@ -118,7 +146,7 @@ public class PlayerManager implements IConst{
 				
 				JniUtil.netInit();
 				
-				JniUtil.transInit(turnServiceIP, TEST_TURN_SERCICE_PORT);//FIXME 8812 test
+				JniUtil.transInit(turnServiceIP, turnServicePort);//FIXME 8812 test
 				JniUtil.transSetCallBackObj(PlayerManager.this, 0);
 				JniUtil.transSetCallbackMethodName("onConnect", 0);
 				JniUtil.transSetCallbackMethodName("onDisConnect", 1);

@@ -22,8 +22,10 @@ import cn.jpush.android.api.TagAliasCallback;
 import com.android.howell.webcamH265.R;
 import com.howell.utils.DecodeUtils;
 import com.howell.utils.NetWorkUtils;
+import com.howell.utils.SDCardUtils;
 import com.howell.action.AudioAction;
 import com.howell.action.PlatformAction;
+import com.howell.action.PlayerManager;
 import com.howell.jni.JniUtil;
 import com.howell.protocol.GetNATServerReq;
 import com.howell.protocol.GetNATServerRes;
@@ -48,12 +50,13 @@ public class LogoActivity extends Activity implements TagAliasCallback{
 		setContentView(R.layout.logo);
 		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectNetwork().build());
 		initJni();
+		
+	
 		//推送服务初始化
 		JPushInterface.init(getApplicationContext());
 		setAlias();
 		if(JPushInterface.isPushStopped(getApplicationContext())) 
 			JPushInterface.resumePush(getApplicationContext());
-
 		//判断手机是否连接网络
 		if (!NetWorkUtils.isNetworkConnected(this)) {
 			LoginThread myLoginThread = new LoginThread(3);
@@ -84,8 +87,14 @@ public class LogoActivity extends Activity implements TagAliasCallback{
 				myLoginThread.start();
 			}
 		}
+		
+		
+		
 	}
 
+	
+	
+	
 	public void initJni(){
 		JniUtil.YUVInit();
 		JniUtil.netInit();

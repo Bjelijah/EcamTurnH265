@@ -37,6 +37,7 @@ import android.widget.Toast;
 
 import com.android.howell.webcamH265.R;
 import com.howell.action.PlatformAction;
+import com.howell.action.PlayerManager;
 import com.howell.action.UserPowerAction;
 import com.howell.ecamera.cameraupdatedetective.DeviceVersionDetective;
 import com.howell.ecamera.cameraupdatedetective.Observer;
@@ -630,6 +631,8 @@ public class CameraList extends ListActivity implements Observer{
 				if(arg0.getId() == R.id.iv_playback){
 					if(!list.get(Integer.valueOf(arg0.getTag().toString())).isOnLine()){
 			    		MessageUtiles.postToast(getApplication(), getResources().getString(R.string.not_online_message),2000);
+			    	
+			    		
 			    		return;
 			    	}
 					if(!list.get(Integer.valueOf(arg0.getTag().toString())).iseStoreFlag()){
@@ -645,6 +648,7 @@ public class CameraList extends ListActivity implements Observer{
 					//System.out.println("����");
 					if(!list.get(Integer.valueOf(arg0.getTag().toString())).isOnLine()){
 			    		MessageUtiles.postToast(getApplication(), getResources().getString(R.string.not_online_message),2000);
+			  
 			    		return;
 			    	}
 					
