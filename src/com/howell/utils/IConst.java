@@ -12,11 +12,11 @@ public interface IConst {
 	final String TEST_ACCOUNT   	= "bxm555";//no use
 	final String TEST_PASSWORD		= "bxm555";//no use
 	
-	final String WSDL_URL = "https://192.168.18.245:8850/HomeService/HomeMCUService.svc?wsdl"; //soap service  wsdl url FIXME 
+	final String WSDL_URL = "https://180.166.7.214:8850/HomeService/HomeMCUService.svc?wsdl"; //soap service  wsdl url FIXME 
 	//should not be a local area network addresses 
 	//180.166.7.214
 	
-	final String TEST_IP = "192.168.18.245";//turn service ip FIXME 
+	final String TEST_IP = "180.166.7.214";//turn service ip FIXME 
 	final int TEST_TURN_SERCICE_PORT = 8862;//turn service port 
 	
 	
