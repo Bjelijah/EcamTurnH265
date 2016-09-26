@@ -22,6 +22,7 @@ import android.widget.TextView;
 import cn.jpush.android.api.JPushInterface;
 
 import com.android.howell.webcamH265.R;
+import com.howell.utils.PhoneConfig;
 
 public class Settings extends Activity implements OnClickListener {
 //    private SoapManager mSoapManager;
@@ -36,6 +37,7 @@ public class Settings extends Activity implements OnClickListener {
     private Dialog mDialog;
 	private PopupWindow popupWindow;
     private Activities mActivities;
+    private TextView tvDeviceId;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +56,8 @@ public class Settings extends Activity implements OnClickListener {
         mAccount.setOnClickListener(this);
         mSysMessage.setOnClickListener(this);
         mButton.setOnClickListener(this);
-        
+        tvDeviceId = (TextView) findViewById(R.id.setting_tv_device_id);
+        tvDeviceId.setText(getResources().getString(R.string.device_id)+" : "+PhoneConfig.getPhoneDeveceID(this));
 //        try{
 //	        mSoapManager = SoapManager.getInstance();
 //	        LoginResponse loginResponse = mSoapManager.getLoginResponse();

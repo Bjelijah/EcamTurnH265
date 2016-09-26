@@ -122,7 +122,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dip"
+       
         android:background="@drawable/list_item_bg_middle"
         android:clickable="true"
         android:focusable="true" >
@@ -144,6 +144,28 @@
             android:textSize="18sp" />
     </FrameLayout>
 
+    <FrameLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/list_item_bg_middle"
+        android:layout_marginTop="15dp"
+        >
+        <TextView 
+            android:id="@+id/setting_tv_device_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:text=""
+         		
+            android:textColor="#FF000000"
+            android:textSize="18sp"
+            />
+        
+        
+    </FrameLayout>
+    
+    
+    
     <Button
         android:id="@+id/exit"
         android:layout_width="match_parent"

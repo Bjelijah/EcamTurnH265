@@ -1,6 +1,8 @@
 package com.howell.utils;
 
 import android.content.Context;
+import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.WindowManager;
 
 /**
@@ -22,6 +24,12 @@ public class PhoneConfig {
 		wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 		int height = wm.getDefaultDisplay().getHeight();//��Ļ���
 		return height;
+	}
+	
+	public static String getPhoneDeveceID(Context context){
+		TelephonyManager tm = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+		Log.i("123", "deviceid = "+tm.getDeviceId());
+		return tm.getDeviceId();
 	}
 	
 }
