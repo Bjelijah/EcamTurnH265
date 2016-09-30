@@ -186,7 +186,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 	private static PlayerManager playMgr = PlayerManager.getInstance();
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		mPlayerHandler = new PlayerHandler();
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -264,7 +263,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
                 startTime = bar.parse(mRecord.getStartTime()).getTime()/1000;
                 endTime = bar.parse(mRecord.getEndTime()).getTime()/1000;
             } catch (ParseException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -280,7 +278,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 	    mVedioList.setOnClickListener(new View.OnClickListener() {
 	        @Override
 	        public void onClick(View v) {
-	            // TODO Auto-generated method stub
 	        	if(!dev.iseStoreFlag()){
 	        		MessageUtiles.postToast(getApplicationContext()
 	        				, getResources().getString(R.string.no_sdcard),2000);
@@ -306,7 +303,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 			
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				if(talkManger != null){
 					if(talkManger.getTalkState() == TalkManager.TALKING){
 						talk.setText("开始对讲");
@@ -369,7 +365,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 				
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				if(!existSDCard()){
 					MessageUtiles.postToast(getApplicationContext(), getResources().getString(R.string.no_sdcard),2000);
 					return;
@@ -410,7 +405,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 				
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				Log.e("sdl--->", "mSound.setOnClickListener");
 				if(isAudioOpen){
 					audioPause();
@@ -437,7 +431,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 			
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				getPopupWindowInstance();  
 		        mPopupWindow.showAsDropDown(v);  
 			}
@@ -447,7 +440,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 	    	boolean isNewVer = false;
 	    	@Override
 			protected Void doInBackground(Void... arg0) {
-				// TODO Auto-generated method stub
 	    		isNewVer = checkDevVer();
 				return null;
 			}
@@ -464,7 +456,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 			
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				int isPlayBack = -1;
 				boolean ret;
 				if(playback){
@@ -495,7 +486,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 	    	
 			@Override
 			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
 				if(playback){
 					if(bPause){
 						client.playbackPause(client.getHandle(), true);
@@ -516,7 +506,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 			
 			@Override
 			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
 				if(null != client)
 	        		client.setQuit(true);
 	        	quitDisplay();
@@ -555,7 +544,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 			
 			@Override
 			public void onStopTrackingTouch(SeekBar seekBar) {
-				// TODO Auto-generated method stub
 				int progress = mReplaySeekBar.getProgress();
 				Log.e("----------->>>", "onStopTrackingTouch progress:"+progress);
 				long replayStartTime = correctedStartTime + (long)progress/1000;
@@ -576,7 +564,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 			
 			@Override
 			public void onStartTrackingTouch(SeekBar seekBar) {
-				// TODO Auto-generated method stub
 				int progress = mReplaySeekBar.getProgress();
 				Log.e("----------->>>", "onStartTrackingTouch progress:"+progress);
 				mReplaySeekBar.setSeekBarText(translateTime(progress));
@@ -587,7 +574,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress,
 					boolean fromUser) {
-				// TODO Auto-generated method stub
 				if(fromUser){
 					mReplaySeekBar.setSeekBarText(translateTime(progress));
 				}
@@ -715,7 +701,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
     } 
 
 	private void audioInit() {
-		// TODO Auto-generated method stub
 		int buffer_size = AudioTrack.getMinBufferSize(8000, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
 		mAudioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 8000, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, buffer_size*8, AudioTrack.MODE_STREAM);
 		mAudioData = new byte[buffer_size*8];
@@ -751,7 +736,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 	class InviteThread extends Thread{
 		@Override
 		public void run() {
-			// TODO Auto-generated method stub
 			super.run();
 			client = new InviteUtils(dev);
 			System.out.println("start invite live");
@@ -772,12 +756,26 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 		}
 	}
 	
+	
+	@Deprecated
 	public static void showStreamLen(int streamLen){
 		Message msg = new Message();
 		msg.what = SHOWSTREAMLEN;
 		msg.obj = streamLen;
 		mPlayerHandler.sendMessage(msg);
 	}
+	
+	public static void ShowStreamSpeed(final int kbitPerSec){
+		if (mStreamLen!=null) {
+			mStreamLen.post(new Runnable() {
+				public void run() {
+					mStreamLen.setText(kbitPerSec+" Kbit/s");
+				}
+			});
+		}
+		
+	}
+	
 	
     public static class PlayerHandler extends Handler{
     	private boolean isTimeStampBreak;	//时标溢出标志位
@@ -803,7 +801,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 		@SuppressWarnings("unused")
 		@Override
 		public void handleMessage(Message msg) {
-			// TODO Auto-generated method stub
 			super.handleMessage(msg);
 			if (msg.what == REPLAYSEEKBAR) {
 				//-------------------------------------------------
@@ -901,7 +898,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
         	            setPositiveButton("确定", new DialogInterface.OnClickListener() {   
         	                @Override   
         	                public void onClick(DialogInterface dialog, int which) {   
-        	                    // TODO Auto-generated method stub  
 //        	                	if(null != client)
 //        	    	        		client.setQuit(true);
 //        	    	        	quitDisplay();
@@ -1070,7 +1066,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 		}
         @Override
         protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
 			if(client != null && client.getHandle() != -1){
 				System.out.println("isStartFinish:"+client.isStartFinish()+","+client.toString());
             	while(true){
@@ -1139,7 +1134,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 
 	@Override
 	public boolean onDown(MotionEvent e) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 	
@@ -1147,13 +1141,11 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 		private String direction;
 		private int time;
 		public MyFlingTask(String direction,int time) {
-			// TODO Auto-generated constructor stub
 			this.direction = direction;
 			this.time = time;
 		}
         @Override
         protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
             System.out.println("call doInBackground");
             Log.e("start direction", direction);
             
@@ -1164,7 +1156,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 	            try {
 	            	Thread.sleep(time);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 	            req = new PtzControlReq(account,loginSession,devID,channelNo,"Stop");
@@ -1187,18 +1178,15 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 			
 			@Override
 			public void onAnimationStart(Animation arg0) {
-				// TODO Auto-generated method stub
 			}
 			
 			@Override
 			public void onAnimationRepeat(Animation arg0) {
-				// TODO Auto-generated method stub
 				
 			}
 			
 			@Override
 			public void onAnimationEnd(Animation arg0) {
-				// TODO Auto-generated method stub
 				animationAim.setVisibility(View.GONE);
 				animationBackground.setVisibility(View.GONE);
 				animationAim.clearAnimation();
@@ -1213,7 +1201,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
 			float velocityY) {
-		// TODO Auto-generated method stub
 		if(isAnimationStart || !dev.isPtzFlag() || playback){
 			System.out.println("is not PTZ");
 			return false;
@@ -1273,26 +1260,22 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 	
 	@Override
 	public void onLongPress(MotionEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
 			float distanceY) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void onShowPress(MotionEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public boolean onSingleTapUp(MotionEvent e) {
-		// TODO Auto-generated method stub
 		Log.e("MyGesture", "onSingleTapUp");  
 		System.out.println("playback:"+playback);
 		if(PhoneConfig.getPhoneHeight(this) < PhoneConfig.getPhoneWidth(this)){
@@ -1320,12 +1303,10 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 	
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
-		// TODO Auto-generated method stub
 		return mGestureDetector.onTouchEvent(event);   
 	}
 //	@Override
 //	public void onItemClick(ActionItem item, int position) {
-//		// TODO Auto-generated method stub
 //		int isPlayBack = -1;
 //		boolean ret;
 //		if(playback){
@@ -1350,7 +1331,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 	
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
 		switch (v.getId()) {
 		case R.id.pop_layout_hd:
 			mPopupWindow.dismiss();
@@ -1360,7 +1340,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 				long replayStartTime = 0;
 				@Override
 				protected Void doInBackground(Void... arg0) {
-					// TODO Auto-generated method stub
 //					if(playback){
 //						isPlayBack = 1;
 //						replayStartTime = correctedStartTime + (long)(mReplaySeekBar.getProgress())/1000;
@@ -1409,7 +1388,6 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 				long replayStartTime = 0;
 				@Override
 				protected Void doInBackground(Void... arg0) {
-					// TODO Auto-generated method stub
 //					if(playback){
 //						isPlayBack = 1;
 //						replayStartTime = correctedStartTime + (long)(mReplaySeekBar.getProgress())/1000;

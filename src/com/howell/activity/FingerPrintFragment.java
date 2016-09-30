@@ -43,9 +43,6 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 	Context mContext;
 	FingerprintUiHelper mFinger;
 	ImageView mIvFingerState;
-	
-	
-	
 	Timer mWaitTimer = null;
 	MyWaitTimerTask mWaitTimeTask = null;
 	
@@ -65,16 +62,12 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 			case MSG_ERROR_WAIT_OK:
 				stopTimeTask();
 				showAuthenticationInfo(MyState.WAIT);
-				
 				break;
 			default:
 				break;
 			}
-			
-			
 			super.handleMessage(msg);
 		}
-		
 	};
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

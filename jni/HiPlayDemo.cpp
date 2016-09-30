@@ -1068,7 +1068,6 @@ JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transSetCallbackMethodName
 	const char * _mehtod = env->GetStringUTFChars(method,0);
 	switch(flag){
 	case 0:{
-
 		jclass clz = env->GetObjectClass(g_transMgr->callback_obj);
 		g_transMgr->on_connect_method = env->GetMethodID(clz,_mehtod,"(Ljava/lang/String;)V");
 		break;
@@ -1095,7 +1094,6 @@ JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transSetCallbackMethodName
 	default:
 		break;
 	}
-
 	env->ReleaseStringUTFChars(method,_mehtod);
 }
 

@@ -26,6 +26,9 @@ import bean.TurnGetRecordedFilesBean;
 import bean.Subscribe;
 
 public class PlayerManager implements IConst{
+	
+	private static final int F_TIME = 1;
+	
 	Handler handler;
 	private PlayerManager(){}
 	private static PlayerManager mInstance = null;
@@ -43,7 +46,7 @@ public class PlayerManager implements IConst{
 	private int turnServicePort = -1;
 	private String sessionID = null;
 	private Context context;
-	private int mUnexpectNoFrame = 0;  // if we get no frame > 2sec we reLink(stop and start again) 
+	private int mUnexpectNoFrame = 0;  // if we get no frame > 10sec we reLink(stop and start again) 
 	private Timer timer = null;
 	private MyTimerTask myTimerTask = null;
 	boolean mIsTransDeinit = false;
@@ -75,7 +78,8 @@ public class PlayerManager implements IConst{
 	public void onDisconnectUnexpect(){
 		Log.i("PlayerManager", "on disConnectUnexpect  we need reLink");
 		stopTimerTask();
-		PlayerActivity.showStreamLen(0);
+//		PlayerActivity.showStreamLen(0);
+		PlayerActivity.ShowStreamSpeed(0);
 		handler.sendEmptyMessageDelayed(PlayerActivity.MSG_DISCONNECT_UNEXPECT, 5000);
 	}
 	
@@ -88,7 +92,7 @@ public class PlayerManager implements IConst{
 	private void startTimerTask(){
 		timer = new Timer();
 		myTimerTask = new MyTimerTask();
-		timer.schedule(myTimerTask, 0,200);
+		timer.schedule(myTimerTask, 0,F_TIME*1000);
 	}
 
 	private void stopTimerTask(){
@@ -113,7 +117,6 @@ public class PlayerManager implements IConst{
 //		}
 		turnServiceIP = PlatformAction.getInstance().getTurnServerIP();
 		turnServicePort = PlatformAction.getInstance().getTurnServerPort();
-		
 		turnServiceIP = TEST_IP;
 		turnServicePort = TEST_TURN_SERCICE_PORT;
 		
@@ -135,10 +138,11 @@ public class PlayerManager implements IConst{
 				InputStream ca = getClass().getResourceAsStream("/assets/ca.crt");
 				InputStream client = getClass().getResourceAsStream("/assets/client.crt");
 				InputStream key = getClass().getResourceAsStream("/assets/client.key");
-				String castr = new String(SDCardUtils.saveCreateCertificate(ca, "ca.crt"));
-				String clstr = new String(SDCardUtils.saveCreateCertificate(client, "client.crt"));
-				String keystr = new String(SDCardUtils.saveCreateCertificate(key, "client.key"));
+				String castr = new String(SDCardUtils.saveCreateCertificate(ca, "ca.crt",context));
+				String clstr = new String(SDCardUtils.saveCreateCertificate(client, "client.crt",context));
+				String keystr = new String(SDCardUtils.saveCreateCertificate(key, "client.key",context));
 //				JniUtil.transSetCrt(castr, clstr, keystr);
+				Log.i("123", "castr="+castr);
 				JniUtil.transSetCrtPaht(castr, clstr, keystr);	
 				
 				try {
@@ -152,7 +156,6 @@ public class PlayerManager implements IConst{
 				int type = 101;
 				String id = PhoneConfig.getPhoneUid(context);//FIXME  android id
 				String imei = PhoneConfig.getPhoneDeveceID(context);  //imei
-				
 				
 				JniUtil.transConnect(type, id, PlatformAction.getInstance().getAccount(), PlatformAction.getInstance().getPassword());
 				
@@ -310,36 +313,23 @@ public class PlayerManager implements IConst{
 		}.start();
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	class MyTimerTask extends TimerTask{
 		@Override
 		public void run() {
 			int streamLen = JniUtil.transGetStreamLenSomeTime();
-			Log.i("123","from my time task   "+ streamLen+"");
-			PlayerActivity.showStreamLen(streamLen/1024*8);
+			Log.i("123","from my time task   "+ streamLen+"    speed="+streamLen*8/1024/F_TIME+"kbit");
+//			PlayerActivity.showStreamLen(streamLen*8/1024);
+			PlayerActivity.ShowStreamSpeed(streamLen*8/1024/F_TIME);
 			if (streamLen == 0) {
-			
 				mUnexpectNoFrame++;
 			}else{
 				handler.sendEmptyMessage(PlayerActivity.HIDEPROGRESSBAR);
 				mUnexpectNoFrame = 0;
 			}
 			
-			if (mUnexpectNoFrame == 50) {// 2s / 200ms 
-				
+			if (mUnexpectNoFrame == 10) {// 10s / 1000ms 
 				handler.sendEmptyMessage(PlayerActivity.MSG_DISCONNECT_UNEXPECT);
 			}
-			
 		}
 	}
-	
 }
