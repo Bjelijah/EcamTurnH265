@@ -51,9 +51,13 @@
 	<uses-permission android:name="android.permission.RECORD_AUDIO"></uses-permission>
 	<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"></uses-permission>
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
-
+	<!-- finger -->
+	<uses-permission android:name="android.permission.USE_FINGERPRINT"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+	
+	
     <uses-sdk
-        android:minSdkVersion="10"
+        android:minSdkVersion="17"
         android:targetSdkVersion="17" />
     
     <application

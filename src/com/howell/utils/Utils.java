@@ -282,35 +282,7 @@ public class Utils {
 		return mac;
 	}
 
-	public static String getPhoneUid(Context context){
-		final String androidId = Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
-		UUID uuid = null;
-		try {
-			if (!"9774d56d682e549c".equals(androidId)) //在主流厂商生产的设备上，有一个很经常的bug，就是每个设备都会产生相同的ANDROID_ID：9774d56d682e549c
-			{ 
-				uuid = UUID.nameUUIDFromBytes(androidId.getBytes("utf8"));
-			}
-			else
-			{
-				final String deviceId = ((TelephonyManager) context.getSystemService( Context.TELEPHONY_SERVICE )).getDeviceId();
-				uuid = deviceId != null ? UUID.nameUUIDFromBytes(deviceId.getBytes("utf8")) : UUID.randomUUID();
-			}
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		if (uuid==null) {
-			return null;
-		}
-		DebugUtil.logE("get phone util", uuid.toString());
-		String id = uuid.toString();
-		id = id.replace("-", "");
-		id = id.replace(":", "");
-		DebugUtil.logE("get phone util", id);
-		return id;
-	}
-
+	
 
 
 

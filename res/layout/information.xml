@@ -105,4 +105,22 @@
 
     </FrameLayout>
 
+       
+    <Button
+        android:id="@+id/btn_save_db"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dip"
+        android:layout_marginTop="50dip"
+        android:paddingTop="15dip"
+        android:paddingBottom="15dip"
+        android:background="@drawable/logout_btn_selector"
+        android:text="@string/save_db"
+        android:textColor="#FFFFFFFF"
+        android:textSize="18sp" 
+        android:visibility="gone"
+        />
+    
+    
+    
 </LinearLayout>

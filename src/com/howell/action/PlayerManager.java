@@ -14,6 +14,7 @@ import com.howell.entityclass.VODRecord;
 import com.howell.jni.JniUtil;
 import com.howell.utils.IConst;
 import com.howell.utils.JsonUtil;
+import com.howell.utils.PhoneConfig;
 import com.howell.utils.SDCardUtils;
 import com.howell.utils.Utils;
 
@@ -42,10 +43,11 @@ public class PlayerManager implements IConst{
 	private int turnServicePort = -1;
 	private String sessionID = null;
 	private Context context;
-	
+	private int mUnexpectNoFrame = 0;  // if we get no frame > 2sec we reLink(stop and start again) 
 	private Timer timer = null;
 	private MyTimerTask myTimerTask = null;
-	
+	boolean mIsTransDeinit = false;
+	boolean mHasDisConnectCallback = false;
 	ArrayList<VODRecord> mList = null;
 	
 	public ArrayList<VODRecord> getMList(){
@@ -66,10 +68,16 @@ public class PlayerManager implements IConst{
 	
 	public void onDisConnect(){
 		Log.i("123", "onDisConnect ");
+		
 		handler.sendEmptyMessage(MSG_DISCONNECT);
 	}
 	
-	
+	public void onDisconnectUnexpect(){
+		Log.i("PlayerManager", "on disConnectUnexpect  we need reLink");
+		stopTimerTask();
+		PlayerActivity.showStreamLen(0);
+		handler.sendEmptyMessageDelayed(PlayerActivity.MSG_DISCONNECT_UNEXPECT, 5000);
+	}
 	
 	
 	public long getDialogId(){
@@ -118,10 +126,12 @@ public class PlayerManager implements IConst{
 				Log.i("123", "doinback");	
 				JniUtil.netInit();
 				JniUtil.transInit(turnServiceIP, TEST_TURN_SERCICE_PORT);//FIXME 8812 test
+				mIsTransDeinit = false;
 				JniUtil.transSetCallBackObj(PlayerManager.this, 0);
 				JniUtil.transSetCallbackMethodName("onConnect", 0);
 				JniUtil.transSetCallbackMethodName("onDisConnect", 1);
 				JniUtil.transSetCallbackMethodName("onRecordFileList", 2);
+				JniUtil.transSetCallbackMethodName("onDisconnectUnexpect", 3);
 				InputStream ca = getClass().getResourceAsStream("/assets/ca.crt");
 				InputStream client = getClass().getResourceAsStream("/assets/client.crt");
 				InputStream key = getClass().getResourceAsStream("/assets/client.key");
@@ -140,11 +150,13 @@ public class PlayerManager implements IConst{
 				}
 				
 				int type = 101;
-				String id = Utils.getPhoneUid(context);
+				String id = PhoneConfig.getPhoneUid(context);//FIXME  android id
+				String imei = PhoneConfig.getPhoneDeveceID(context);  //imei
+				
 				
 				JniUtil.transConnect(type, id, PlatformAction.getInstance().getAccount(), PlatformAction.getInstance().getPassword());
 				
-				Log.i("123", "transConnect ok");
+				Log.i("PlayManager", "transConnect ok");
 				
 				AudioAction.getInstance().initAudio();
 				AudioAction.getInstance().playAudio();
@@ -223,7 +235,10 @@ public class PlayerManager implements IConst{
 	}
 	
 	public void transDeInit(){
-		JniUtil.transDeinit();
+		if (!mIsTransDeinit) {
+			JniUtil.transDeinit();
+			mIsTransDeinit = true;
+		}
 	}
 	
 	public void transInit(String ip,int port){
@@ -245,7 +260,6 @@ public class PlayerManager implements IConst{
 		new AsyncTask<String, Void, Void>(){
 			@Override
 			protected Void doInBackground(String... params) {
-				// TODO Auto-generated method stub
 				String deviceId = PlatformAction.getInstance().getDevice_id();
 				TurnGetRecordedFilesBean bean = new TurnGetRecordedFilesBean(deviceId, 0, params[0], params[1]);
 				String jsonStr = JsonUtil.getRecordFilesJson(bean);
@@ -260,12 +274,41 @@ public class PlayerManager implements IConst{
 			mList = JsonUtil.parseRecordFileList(new JSONObject(jsonStr));
 			handler.sendEmptyMessage(MSG_RECORD_LIST_GET);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	
+	public void reLink(){
+		//stop
+		Log.d("123", "relink........");
+		handler.sendEmptyMessage(PlayerActivity.SHOWPROGRESSBAR);
+		new Thread(){
+			public void run() {
+				
+				stopViewCam();
+				logoutCam();
+				transDeInit();
+				int sec = 10;
+				while (!mIsTransDeinit) {
+					try {
+						sleep(1000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					sec--;
+					if (sec<0) {
+						break;
+					}					
+				}
+				
+				loginCam();
+				
+				
+				
+			};
+		}.start();
+	}
 	
 	
 	
@@ -281,8 +324,21 @@ public class PlayerManager implements IConst{
 		@Override
 		public void run() {
 			int streamLen = JniUtil.transGetStreamLenSomeTime();
-			Log.i("123", streamLen+"");
+			Log.i("123","from my time task   "+ streamLen+"");
 			PlayerActivity.showStreamLen(streamLen/1024*8);
+			if (streamLen == 0) {
+			
+				mUnexpectNoFrame++;
+			}else{
+				handler.sendEmptyMessage(PlayerActivity.HIDEPROGRESSBAR);
+				mUnexpectNoFrame = 0;
+			}
+			
+			if (mUnexpectNoFrame == 50) {// 2s / 200ms 
+				
+				handler.sendEmptyMessage(PlayerActivity.MSG_DISCONNECT_UNEXPECT);
+			}
+			
 		}
 	}
 	

@@ -19,12 +19,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
+import bean.UserLoginDBBean;
+
+import java.util.Map;
 
 import com.android.howell.webcamH265.R;
 import com.howell.action.PlatformAction;
 import com.howell.broadcastreceiver.HomeKeyEventBroadCastReceiver;
+import com.howell.db.UserLoginDao;
 import com.howell.utils.DecodeUtils;
 import com.howell.utils.MessageUtiles;
+import com.howell.utils.PhoneConfig;
 import com.howell.protocol.GetNATServerReq;
 import com.howell.protocol.GetNATServerRes;
 import com.howell.protocol.LoginRequest;
@@ -37,7 +44,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private EditText mPassWord;
     private Button mButton;
     private SoapManager mSoapManager;
-
+    private TextView mtvIEMI;
     public ProgressDialog mLoadingDialog;
     
     private static final int POSTPASSWORDERROR = 1;
@@ -121,6 +128,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
 			}   
 		});   */
         
+        mtvIEMI = (TextView) findViewById(R.id.main_tv_imei);
+        mtvIEMI.setText(getResources().getString(R.string.device_id)+" : "+PhoneConfig.getPhoneDeveceID(this));
+        
+        
     }
     
 
@@ -153,7 +164,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 					// TODO Auto-generated method stub
 					try{
 						String encodedPassword = DecodeUtils.getEncodedPassword(password);
-				        LoginRequest loginReq = new LoginRequest(account, "Common",encodedPassword, "1.0.0.1");
+						String imei = PhoneConfig.getPhoneDeveceID(MainActivity.this);
+				        LoginRequest loginReq = new LoginRequest(account, "Common",encodedPassword, "1.0.0.1",imei);
 				        loginRes = mSoapManager.getUserLoginRes(loginReq);
 				        Log.e("loginRes",loginRes.getResult().toString());
 			         }catch (Exception e) {
@@ -185,11 +197,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	                     Log.e("MainActivity", res.toString());
 	                     PlatformAction.getInstance().setTurnServerIP(res.getTURNServerAddress());
 	                     PlatformAction.getInstance().setTurnServerPort(res.getTURNServerPort());
-	                     
+	                     saveUserInfo2Db();
 	                     Intent intent = new Intent(MainActivity.this,CamTabActivity.class);
 	                     startActivity(intent);
 	                     finish();
-	                     mActivities.getmActivityList().get("RegisterOrLogin").finish();
+	                     
+	                     if (mActivities.getmActivityList().get("RegisterOrLogin")!=null) {
+	                    	   mActivities.getmActivityList().get("RegisterOrLogin").finish();
+						}else{
+							Log.e("123", "RegisterOrLogin == null");
+						}
+	                     
+	                  
 		            }else if(loginRes.getResult().toString().equals("AccountNotExist")){
 		            	MessageUtiles.postAlertDialog(MainActivity.this, getResources().getString(R.string.login_fail), getResources().getString(R.string.account_error), R.drawable.expander_ic_minimized
 								, null, getResources().getString(R.string.ok), null, null);
@@ -212,6 +231,34 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		}
 	        
     }
+    
+	private void saveUserInfo2Db(){
+		long sn = PhoneConfig.showUserSerialNum(this);
+		if (sn<0) {
+			Toast.makeText(this, getResources().getString(R.string.save_db_error), Toast.LENGTH_SHORT).show();
+			return ;
+		}
+		int userNum = (int)sn;
+		String userName = PlatformAction.getInstance().getAccount();
+		String userPassword = PlatformAction.getInstance().getPassword();
+		UserLoginDBBean info = new UserLoginDBBean(userNum, userName, userPassword);
+		
+		UserLoginDao dao = new UserLoginDao(this, "user.db", 1);
+		if (dao.findByNum(userNum)) {
+			dao.updataByNum(info);
+		}else{
+			dao.insert(info);
+		}
+		/*test show*/
+//		List<UserLoginDBBean> list = dao.queryAll();
+//		for(UserLoginDBBean o: list){
+//			Log.i("123", o.toString());
+//		}
+		dao.close();
+//		Toast.makeText(this, getResources().getString(R.string.save_db_ok), Toast.LENGTH_SHORT).show();
+	
+	}
+    
     
     public static class MessageHandler extends Handler{
     	

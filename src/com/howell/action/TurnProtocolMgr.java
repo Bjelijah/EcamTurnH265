@@ -7,6 +7,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 import com.howell.jni.JniUtil;
 import com.howell.utils.IConst;
+import com.howell.utils.PhoneConfig;
 import com.howell.utils.SSlSocketUtil;
 import com.howell.utils.TurnJsonUtil;
 import com.howell.utils.Utils;
@@ -69,7 +70,7 @@ public class TurnProtocolMgr implements IConst{
 	public void connect2TurnService(){
 		readbuf.clear();
 		int type = 101;
-		String deviceId =Utils.getPhoneUid(context);
+		String deviceId = PhoneConfig.getPhoneUid(context);//FIXME
 		String userName = PlatformAction.getInstance().getAccount();
 		String password = PlatformAction.getInstance().getPassword();
 		TurnConnectBean bean = new TurnConnectBean(type, deviceId, userName, password);

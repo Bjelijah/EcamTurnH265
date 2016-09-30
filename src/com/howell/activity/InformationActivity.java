@@ -1,19 +1,29 @@
 package com.howell.activity;
 
+import android.R.integer;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+import bean.UserLoginDBBean;
+
+import java.util.List;
 
 import com.android.howell.webcamH265.R;
+import com.howell.action.PlatformAction;
 import com.howell.broadcastreceiver.HomeKeyEventBroadCastReceiver;
+import com.howell.db.UserLoginDao;
 import com.howell.protocol.LoginResponse;
 import com.howell.protocol.SoapManager;
+import com.howell.utils.PhoneConfig;
 
 public class InformationActivity extends Activity implements OnClickListener{
     private SoapManager mSoapManager;
@@ -24,7 +34,8 @@ public class InformationActivity extends Activity implements OnClickListener{
     private FrameLayout mChangePhoneNum,mChangePassword,mChangeMail;
     private Activities mActivities;
     private HomeKeyEventBroadCastReceiver receiver;
-
+    private Button mDBbtn;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
@@ -41,11 +52,12 @@ public class InformationActivity extends Activity implements OnClickListener{
         mChangePhoneNum = (FrameLayout)findViewById(R.id.fl_change_phone_num);
         mChangePassword = (FrameLayout)findViewById(R.id.fl_change_password);
         mChangeMail = (FrameLayout)findViewById(R.id.fl_change_mail);
+        mDBbtn = (Button) findViewById(R.id.btn_save_db);
         mChangePassword.setOnClickListener(this);
         mChangePhoneNum.setOnClickListener(this);
         mChangeMail.setOnClickListener(this);
         mBack.setOnClickListener(this);
-        
+        mDBbtn.setOnClickListener(this);
         try{
 	        mSoapManager = SoapManager.getInstance();
 	    	SoapManager.context = this;
@@ -89,8 +101,42 @@ public class InformationActivity extends Activity implements OnClickListener{
 		case R.id.ib_information_back:
 			finish();
 			break;
+		case R.id.btn_save_db:
+			saveUserInfo2Db();
+			break;
 		default:
 			break;
 		}
 	}
+	
+	private void saveUserInfo2Db(){
+		long sn = PhoneConfig.showUserSerialNum(this);
+		if (sn<0) {
+			Toast.makeText(this, getResources().getString(R.string.save_db_error), Toast.LENGTH_SHORT).show();
+			return ;
+		}
+		int userNum = (int)sn;
+		String userName = PlatformAction.getInstance().getAccount();
+		String userPassword = PlatformAction.getInstance().getPassword();
+		UserLoginDBBean info = new UserLoginDBBean(userNum, userName, userPassword);
+		
+		
+		UserLoginDao dao = new UserLoginDao(this, "user.db", 1);
+		if (dao.findByNum(userNum)) {
+			dao.updataByNum(info);
+		}else{
+			dao.insert(info);
+		}
+		/*test show*/
+//		List<UserLoginDBBean> list = dao.queryAll();
+//		for(UserLoginDBBean o: list){
+//			Log.i("123", o.toString());
+//		}
+		dao.close();
+		
+		
+		Toast.makeText(this, getResources().getString(R.string.save_db_ok), Toast.LENGTH_SHORT).show();
+	
+	}
+	
 }

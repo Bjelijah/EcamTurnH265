@@ -210,4 +210,19 @@
 	
 	<string name="play_talk">按住说话</string>
 	<string name="device_set_no_permission">没有操作权限</string>
+	<string name="save_db">绑定当前帐号与指纹信息</string>
+	<string name="save_db_ok">绑定成功!</string>
+	<string name="save_db_error">绑定失败！</string>
+	
+	
+	<!-- 指纹识别 -->
+	<string name="finger_title">指纹识别</string>
+	<string name="finger_cancel">取消</string>
+	<string name="finger_login_with_password">使用密码登入</string>
+	<string name="fingerprint_description">通过识别指纹登入绑定的账号</string>
+	<string name="fingerprint_hint">请按下获取指纹</string>
+	<string name="fingerprint_failed">验证失败！！</string>
+	<string name="fingerprint_error">失败 请等待片刻再尝试</string>
+	<string name="fingerprint_ok">验证成功!!  正在登入..</string>
+	<string name="fingerprint_sign_error">登入失败 请用密码登入 </string>
 </resources>

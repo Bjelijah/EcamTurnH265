@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -111,7 +112,8 @@ public class NavigationActivity extends Activity {
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
-	    mActivities.removeActivity("RegisterOrLogin");
+//		Log.d("123", "navigation remove register or login");
+	    mActivities.removeActivity("NavigationActivity");
 	}
 
 	// 导航图片view的适配器，必须要实现的是下面四个方法

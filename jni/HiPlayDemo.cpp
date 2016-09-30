@@ -810,7 +810,7 @@ typedef struct {
 	JavaVM* jvm;
 	JNIEnv * env;
 	jobject callback_obj;
-	jmethodID on_connect_method,on_disconnect_method,on_recordFile_method;
+	jmethodID on_connect_method,on_disconnect_method,on_recordFile_method,on_socket_error_method;
 	int transDataLen;
 }TRANS_T;
 
@@ -916,6 +916,23 @@ long getTimeStamp(){
 	return g_timeStamp;
 }
 
+int on_my_socket_error_fun(){
+	LOGE("on my socket_error fun");
+	if(res == NULL)return -1;
+	JNIEnv *env = NULL;
+	JavaVM * _jvm = g_transMgr->jvm;
+	if(_jvm->AttachCurrentThread( &env, NULL) != JNI_OK) {
+		LOGE("%s: AttachCurrentThread() failed", __FUNCTION__);
+		return 0;
+	}
+	env->CallVoidMethod(g_transMgr->callback_obj,g_transMgr->on_socket_error_method);
+	if (_jvm->DetachCurrentThread() != JNI_OK) {
+		LOGE("%s: DetachCurrentThread() failed", __FUNCTION__);
+	}
+
+	return 0;
+}
+
 int on_my_data_fun(int type,const char *data,int len){
 	//LOGI("on data fun  len=%d",len);
 	if(res == NULL){
@@ -986,7 +1003,7 @@ JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transInit
 
 		env->GetJavaVM(&g_transMgr->jvm);
 	}
-	trans_init(on_my_connect,on_my_ack_res,on_my_data_fun);
+	trans_init(on_my_connect,on_my_ack_res,on_my_data_fun,on_my_socket_error_fun);
 	const char * _ip = env->GetStringUTFChars(ip,0);
 	strcpy(g_transMgr->ip,_ip);
 	g_transMgr->port = port;
@@ -1066,6 +1083,12 @@ JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transSetCallbackMethodName
 	case 2:{
 		jclass clz = env->GetObjectClass(g_transMgr->callback_obj);
 		g_transMgr->on_recordFile_method = env->GetMethodID(clz,_mehtod,"(Ljava/lang/String;)V");
+		break;
+	}
+
+	case 3:{
+		jclass clz = env->GetObjectClass(g_transMgr->callback_obj);
+		g_transMgr->on_socket_error_method = env->GetMethodID(clz,_mehtod,"()V");
 		break;
 	}
 

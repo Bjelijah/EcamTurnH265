@@ -13,9 +13,11 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import com.android.howell.webcamH265.R;
+import com.howell.action.FingerprintUiHelper;
 import com.howell.broadcastreceiver.HomeKeyEventBroadCastReceiver;
 import com.howell.utils.DecodeUtils;
 import com.howell.utils.MessageUtiles;
+import com.howell.utils.PhoneConfig;
 import com.howell.protocol.GetNATServerReq;
 import com.howell.protocol.GetNATServerRes;
 import com.howell.protocol.LoginRequest;
@@ -57,7 +59,27 @@ public class RegisterOrLogin extends Activity implements OnClickListener{
 		mRegister.setOnClickListener(this);
 		mLogin.setOnClickListener(this);
 		mTest.setOnClickListener(this);
+		
+		
+		
+		
+		
 	}
+	
+	@Override
+	protected void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
+		if(FingerprintUiHelper.isFingerAvailable(this)){
+			FingerPrintFragment fragment = new FingerPrintFragment();
+			fragment.show(getFragmentManager(), "fingerLogin");
+		}
+		
+		
+	}
+	
+	
+	
 	@Override
 	public void onClick(View view) {
 		// TODO Auto-generated method stub
@@ -81,7 +103,8 @@ public class RegisterOrLogin extends Activity implements OnClickListener{
 				protected Void doInBackground(Void... params) {
 					// TODO Auto-generated method stub
 					String encodedPassword = DecodeUtils.getEncodedPassword("100868");
-					LoginRequest loginReq = new LoginRequest("100868", "Common",encodedPassword, "1.0.0.1");
+					String imei = PhoneConfig.getPhoneDeveceID(RegisterOrLogin.this);
+					LoginRequest loginReq = new LoginRequest("100868", "Common",encodedPassword, "1.0.0.1",imei);
 					LoginResponse loginRes = mSoapManager.getUserLoginRes(loginReq);
 				
 					if (loginRes.getResult().toString().equals("OK")) {

@@ -18,6 +18,7 @@ import com.howell.entityclass.NodeDetails;
 import com.howell.entityclass.VODRecord;
 import com.howell.utils.AnalyzingDoNetOutput;
 import com.howell.utils.IConst;
+import com.howell.utils.PhoneConfig;
 import com.howell.utils.SSLConection;
 
 import android.content.Context;
@@ -132,7 +133,9 @@ public class SoapManager implements Serializable ,IConst{
         rpc.addProperty("PwdType", loginRequest.getPwdType());
         rpc.addProperty("Password", loginRequest.getPassword());
         rpc.addProperty("Version", loginRequest.getVersion());
-
+        rpc.addProperty("IEMI",loginRequest.getIEMI());
+        
+        
         SoapObject object = initEnvelopAndTransport(rpc,"http://www.haoweis.com/HomeServices/MCU/userLogin");
 
 //        if (object == null) {

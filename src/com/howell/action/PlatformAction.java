@@ -2,6 +2,7 @@ package com.howell.action;
 
 import java.util.List;
 
+import com.howell.activity.LogoActivity;
 import com.howell.entityclass.Device;
 import com.howell.entityclass.NodeDetails;
 import com.howell.jni.JniUtil;
@@ -13,6 +14,7 @@ import com.howell.protocol.SoapManager;
 import com.howell.utils.DecodeUtils;
 import com.howell.utils.IConst;
 import com.howell.utils.JsonUtil;
+import com.howell.utils.PhoneConfig;
 
 import android.R.string;
 import android.os.AsyncTask;
@@ -140,7 +142,8 @@ public class PlatformAction implements IConst{
 			@Override
 			protected Boolean doInBackground(Void... params) {
 				String encodedPassword = DecodeUtils.getEncodedPassword(TEST_PASSWORD);
-				LoginRequest loginReq = new LoginRequest(TEST_ACCOUNT, "Common",encodedPassword, "1.0.0.1");
+//				String imei = PhoneConfig.getPhoneDeveceID(PlatformAction.this);
+				LoginRequest loginReq = new LoginRequest(TEST_ACCOUNT, "Common",encodedPassword, "1.0.0.1",null);
 				LoginResponse loginRes = mSoapManager.getUserLoginRes(loginReq);
 				if(loginRes.getResult().equals("OK")){
 					List<Device> list = loginRes.getNodeList();

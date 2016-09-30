@@ -22,6 +22,7 @@ import cn.jpush.android.api.TagAliasCallback;
 import com.android.howell.webcamH265.R;
 import com.howell.utils.DecodeUtils;
 import com.howell.utils.NetWorkUtils;
+import com.howell.utils.PhoneConfig;
 import com.howell.action.AudioAction;
 import com.howell.action.PlatformAction;
 import com.howell.jni.JniUtil;
@@ -43,7 +44,6 @@ public class LogoActivity extends Activity implements TagAliasCallback{
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.logo);
 		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectNetwork().build());
@@ -76,7 +76,7 @@ public class LogoActivity extends Activity implements TagAliasCallback{
 			if(!account.equals("") && !password.equals("")){
 				PlatformAction.getInstance().setAccount(account);
 				PlatformAction.getInstance().setPassword(password);
-				LoginThread myLoginThread = new LoginThread(1);
+				LoginThread myLoginThread = new LoginThread(2);//FIXME used to 1 : now always need login by finger
 				myLoginThread.start();
 			}else{
 				//如果用户以前没有登陆过app（用户名，密码为空字符串）则进入注册、登录、演示界面
@@ -96,7 +96,6 @@ public class LogoActivity extends Activity implements TagAliasCallback{
 	
 	@Override
 	protected void onStop() {
-		// TODO Auto-generated method stub
 		super.onStop();
 		this.finish();
 	}
@@ -104,12 +103,10 @@ public class LogoActivity extends Activity implements TagAliasCallback{
 	class LoginThread extends Thread{
 		private int flag;
 		public LoginThread(int flag) {
-			// TODO Auto-generated constructor stub
 			this.flag = flag;
 		}
 		@Override
 		public void run() {
-			// TODO Auto-generated method stub
 			super.run();
 			try {
 				Thread.sleep(1 * 1000);
@@ -123,7 +120,8 @@ public class LogoActivity extends Activity implements TagAliasCallback{
 						try{
 							//登录协议实现
 							String encodedPassword = DecodeUtils.getEncodedPassword(password);
-							LoginRequest loginReq = new LoginRequest(account, "Common",encodedPassword, "1.0.0.1");
+							String imei = PhoneConfig.getPhoneDeveceID(LogoActivity.this);
+							LoginRequest loginReq = new LoginRequest(account, "Common",encodedPassword, "1.0.0.1",imei);
 							LoginResponse loginRes = mSoapManager.getUserLoginRes(loginReq);
 							if(loginRes.getResult().equals("OK")){
 								//登录成功则进入摄像机列表界面
@@ -141,7 +139,6 @@ public class LogoActivity extends Activity implements TagAliasCallback{
 								startActivity(intent);
 							}
 						}catch (Exception e) {
-							// TODO: handle exception
 							//若网络不好发生各种exception则进入注册、登录、演示界面
 							Intent intent = new Intent(LogoActivity.this,RegisterOrLogin.class);
 							intent.putExtra("intentFlag", 2);
@@ -161,7 +158,6 @@ public class LogoActivity extends Activity implements TagAliasCallback{
 					}
 				}
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -177,7 +173,6 @@ public class LogoActivity extends Activity implements TagAliasCallback{
 	//Jpush推送服务器设置别名回调，返回设置结果
 	@Override
 	public void gotResult(int code, String alias, Set<String> tags) {
-		// TODO Auto-generated method stub
 		/*
 		String logs ;
 		switch (code) {

@@ -128,6 +128,8 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 	public static final Integer SHOW_NO_STREAM_ARRIVE_PROGRESS = 0x0009;
 	public static final Integer HIDE_HAS_STREAM_ARRIVE_PROGRESS = 0x0010;
 	public static final Integer DETECT_IF_NO_STREAM_ARRIVE = 0x0011;
+	public static final Integer MSG_DISCONNECT_UNEXPECT		   = 0x0012;
+	
 	
 	private SoapManager mSoapManger;
 	private String account,loginSession,devID;
@@ -972,7 +974,10 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 				Log.i("123", "msg what = MSG_DISCONNECT");
 				playMgr.transDeInit();
 			}
-		
+			if(msg.what == MSG_DISCONNECT_UNEXPECT){
+				Log.i("123", "PlayerActivity   msg what == MSG_DISCONNECT_UNEXPECT");
+				playMgr.reLink();
+			}
 			
 		}
 	}
