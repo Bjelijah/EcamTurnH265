@@ -71,9 +71,10 @@ public class TurnProtocolMgr implements IConst{
 		readbuf.clear();
 		int type = 101;
 		String deviceId = PhoneConfig.getPhoneUid(context);//FIXME
+		String imei = PhoneConfig.getPhoneDeveceID(context);  //imei
 		String userName = PlatformAction.getInstance().getAccount();
 		String password = PlatformAction.getInstance().getPassword();
-		TurnConnectBean bean = new TurnConnectBean(type, deviceId, userName, password);
+		TurnConnectBean bean = new TurnConnectBean(type, imei, userName, password);
 		String jsonStr = TurnJsonUtil.getTurnConnectJsonStr(bean);
 		Log.i("123", "json str="+jsonStr+"   size="+jsonStr.length());
 		

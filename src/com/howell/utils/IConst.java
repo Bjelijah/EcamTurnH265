@@ -8,18 +8,21 @@ public interface IConst {
 	final int MSG_VIDEO_LIST_GET_OK  = 0xf2;
 	
 	
-	
+	@Deprecated
 	final String TEST_ACCOUNT   	= "bxm555";//no use
+	@Deprecated
 	final String TEST_PASSWORD		= "bxm555";//no use
 	
 	
 	
 //	final String WSDL_URL = "https://192.168.18.245:8850/HomeService/HomeMCUService.svc?wsdl"; //soap service  wsdl url
+	@Deprecated
 	final String WSDL_URL = "https://180.166.7.214:8850/HomeService/HomeMCUService.svc?wsdl"; //soap service  wsdl url
 	
 	
 	//192.168.18.245
 
+	@Deprecated
 	final String TEST_IP = "180.166.7.214";//turn service ip
 	final int TEST_TURN_SERCICE_PORT = 8862;//turn service port
 	

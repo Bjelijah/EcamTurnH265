@@ -20,6 +20,7 @@ import com.howell.utils.AnalyzingDoNetOutput;
 import com.howell.utils.IConst;
 import com.howell.utils.PhoneConfig;
 import com.howell.utils.SSLConection;
+import com.howell.utils.SharedPreferencesUtil;
 
 import android.content.Context;
 import android.util.Log;
@@ -33,7 +34,8 @@ public class SoapManager implements Serializable ,IConst{
     //http://www.haoweis.com:8800/HomeService/HomeMCUService.svc?xsd=xsd0
 //    private static String sEndPoint = "http://www.haoweis.com:8800/HomeService/HomeMCUService.svc?wsdl";
  
-    private static String sEndPoint = WSDL_URL;
+//    private static String sEndPoint = WSDL_URL;//FIXME
+    private static String sEndPoint = null;//FIXME
     
     //private static String sSoapAction = null;
 
@@ -51,7 +53,13 @@ public class SoapManager implements Serializable ,IConst{
     private SoapManager() {
 
     }
-
+    
+    public static void initUrl(Context context){
+    	String ip = SharedPreferencesUtil.getLoginServiceIP(context);
+    	int port = SharedPreferencesUtil.getLoginServicePort(context);
+    	sEndPoint = "https://"+ip+":"+port+"/HomeService/HomeMCUService.svc?wsdl";
+    }
+    
     public static SoapManager getInstance() {
         return sInstance;
     }
@@ -105,6 +113,7 @@ public class SoapManager implements Serializable ,IConst{
        // com.howell.activity.FakeX509TrustManager.allowAllSSL(); 
         SSLConection.allowAllSSL(context);
         HttpTransportSE transport;
+       
 		transport = new HttpTransportSE(sEndPoint);
 		
 		transport.debug = true;

@@ -5,10 +5,16 @@
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="username">Account:</string>
+      <string name="service_ip">Service_IP:</string>
+       <string name="service_port">Port:</string>
     <string name="password">Password:</string>
     <string name="remember_password">Remember password</string>
     <string name="message">Please link network first</string>
     <string name="ok">OK</string>
+    <string name="save_and_back">Save And Back</string>
+    <string name="login_setting_default_IP">180.166.7.214</string>
+    <string name="login_setting_default_port">8850</string>
+    <string name="login_setting_introduction">Note: If empty, will use the default IP and PORT</string>
     <string name="verification">Account and password cannot be empty</string>
     <string name="password_error">Password error</string>
     <string name="account_error">Account does not exist</string>

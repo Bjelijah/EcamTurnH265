@@ -66,6 +66,7 @@ public class LogoActivity extends Activity implements TagAliasCallback{
 			//获取平台协议单例对象
 			mSoapManager = SoapManager.getInstance();
 			SoapManager.context = this;
+			SoapManager.initUrl(this);
 			//从配置文件获取开场导航界面标志位不存在则为true，获取用户名和密码如果不存在则为空字符串
 			SharedPreferences sharedPreferences = getSharedPreferences("set",Context.MODE_PRIVATE);
 			isFirstLogin = sharedPreferences.getBoolean("isFirstLogin", true);

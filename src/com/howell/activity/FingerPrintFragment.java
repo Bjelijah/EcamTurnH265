@@ -30,6 +30,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import bean.UserLoginDBBean;
@@ -95,11 +97,19 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 		
 		mTvFingerWait = (TextView) v.findViewById(R.id.tv_finger_wait);
 		
-		
+	
 		
 		return v;
 	}
 
+	
+	@Override
+	public void onStart() {
+		// TODO Auto-generated method stub
+	
+		super.onStart();
+	}
+	
 	@Override
 	public void onDestroyView() {
 		// TODO Auto-generated method stub
@@ -135,7 +145,6 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 		case 1001:
 			showAuthenticationInfo(MyState.WAIT);
 			break;
-
 		default:
 			break;
 		}	

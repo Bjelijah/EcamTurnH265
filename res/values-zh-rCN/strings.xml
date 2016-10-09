@@ -5,10 +5,16 @@
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="username">用户名：</string>
+    <string name="service_ip">服务器IP：</string>
+    <string name="service_port">端口：</string>
     <string name="password">密码：</string>
     <string name="remember_password">记住密码</string>
     <string name="message">请先连接网络!</string>
     <string name="ok">确定</string>
+    <string name="save_and_back">保存并返回</string>
+    <string name="login_setting_default_IP">180.166.7.214</string>
+    <string name="login_setting_default_port">8850</string>
+    <string name="login_setting_introduction">注意：若缺省，将使用默认IP地址和端口号</string>
     <string name="verification">用户名和密码不能为空</string>
     <string name="password_error">密码错误</string>
     <string name="account_error">帐户不存在</string>

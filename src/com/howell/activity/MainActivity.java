@@ -64,7 +64,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     
 //    private ResizeLayout layout;
     
-    private ImageButton mBack;
+    private ImageButton mBack,mSetting;
 	private Dialog waitDialog;
 
     @Override
@@ -86,7 +86,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         mButton = (Button) findViewById(R.id.ok);
         
         mBack = (ImageButton)findViewById(R.id.ib_login_back);
-        
+        mSetting = (ImageButton)findViewById(R.id.ib_login_setting_service);
         SharedPreferences sharedPreferences = getSharedPreferences("set",Context.MODE_PRIVATE);
         String account = sharedPreferences.getString("account", "");
         String password = sharedPreferences.getString("password", "");
@@ -97,6 +97,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         handler = new MessageHandler();
         mButton.setOnClickListener(this);
         mBack.setOnClickListener(this);
+        mSetting.setOnClickListener(this);
         Intent intent = getIntent();
         intentFlag = intent.getIntExtra("intentFlag", 0);
         if(intentFlag == 1){
@@ -146,6 +147,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		case R.id.ib_login_back:
 			finish();
 			break;
+		case R.id.ib_login_setting_service:
+			Intent intent = new Intent(this,LoginSettingActivity.class);
+			startActivity(intent);
+			break;
 		case R.id.ok:
 			final String account = mUserName.getText().toString().trim();
 	        final String password = mPassWord.getText().toString().trim();
@@ -155,6 +160,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 //				MessageUtiles.postNewUIDialog2(MainActivity.getContext(), MainActivity.getContext().getString(R.string.verification), MainActivity.getContext().getString(R.string.ok), 1);
 	        	return;
 	        }
+			SoapManager.initUrl(this);
 	        waitDialog = MessageUtiles.postWaitingDialog(MainActivity.this);
 			waitDialog.show();
 			new AsyncTask<Void, Integer, Void>() {

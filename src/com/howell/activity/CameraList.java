@@ -282,14 +282,23 @@ public class CameraList extends ListActivity implements Observer{
 			    UpdateAndroidTokenRes res = mSoapManager.GetUpdateAndroidTokenRes(updateAndroidTokenReq);
 			    Log.e("savePushParam", res.getResult());
 			    
-			    while(list == null){
+			    
+			    int _num = 10;
+			    while(list == null){//FIXME   should use RxAndroid or Rxjava observer 
 			    	try {
 						sleep(1000);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-			    	System.out.println("test");
+			    	_num--;
+			    	if (_num < 0) {
+						return;
+					}
+			    	
+			    	
+			    	
+			    	Log.i("123", "CameraList test");
 			    }
 			    for(NodeDetails d:list){
                 	System.out.println("aaaaaa");

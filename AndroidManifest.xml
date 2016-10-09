@@ -58,7 +58,7 @@
 	
     <uses-sdk
         android:minSdkVersion="17"
-        android:targetSdkVersion="17" />
+        android:targetSdkVersion="22" />
     
     <application
         android:allowBackup="true"
@@ -187,6 +187,12 @@
             android:windowSoftInputMode="adjustPan" 
             android:theme="@android:style/Theme.Black.NoTitleBar" >
         </activity>
+        
+        <activity 
+            android:name="com.howell.activity.LoginSettingActivity"
+              android:screenOrientation="portrait"
+              android:theme="@android:style/Theme.Black.NoTitleBar"
+            ></activity>
         
         <activity
             android:name="com.howell.activity.NavigationActivity"

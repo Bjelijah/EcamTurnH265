@@ -16,6 +16,7 @@ import com.howell.utils.IConst;
 import com.howell.utils.JsonUtil;
 import com.howell.utils.PhoneConfig;
 import com.howell.utils.SDCardUtils;
+import com.howell.utils.SharedPreferencesUtil;
 import com.howell.utils.Utils;
 
 import android.content.Context;
@@ -115,10 +116,12 @@ public class PlayerManager implements IConst{
 //			handler.sendEmptyMessage(MSG_LOGIN_CAM_OK);
 //			return ;
 //		}
-		turnServiceIP = PlatformAction.getInstance().getTurnServerIP();
-		turnServicePort = PlatformAction.getInstance().getTurnServerPort();
-		turnServiceIP = TEST_IP;
-		turnServicePort = TEST_TURN_SERCICE_PORT;
+//		turnServiceIP = PlatformAction.getInstance().getTurnServerIP();
+//		turnServicePort = PlatformAction.getInstance().getTurnServerPort();
+//		turnServiceIP = TEST_IP;//FIXME
+		turnServiceIP = SharedPreferencesUtil.getTurnServerIP(context);
+//		turnServicePort = TEST_TURN_SERCICE_PORT;
+		turnServicePort = SharedPreferencesUtil.getTurnServerPort(context);
 		
 		Log.i("123", "login cam");
 
@@ -157,7 +160,7 @@ public class PlayerManager implements IConst{
 				String id = PhoneConfig.getPhoneUid(context);//FIXME  android id
 				String imei = PhoneConfig.getPhoneDeveceID(context);  //imei
 				
-				JniUtil.transConnect(type, id, PlatformAction.getInstance().getAccount(), PlatformAction.getInstance().getPassword());
+				JniUtil.transConnect(type, imei, PlatformAction.getInstance().getAccount(), PlatformAction.getInstance().getPassword());
 				
 				Log.i("PlayManager", "transConnect ok");
 				
@@ -291,18 +294,11 @@ public class PlayerManager implements IConst{
 				stopViewCam();
 				logoutCam();
 				transDeInit();
-				int sec = 10;
-				while (!mIsTransDeinit) {
-					try {
-						sleep(1000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					sec--;
-					if (sec<0) {
-						break;
-					}					
+				
+				try {
+					Thread.sleep(1000);//
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
 				
 				loginCam();

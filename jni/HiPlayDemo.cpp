@@ -1208,3 +1208,7 @@ JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_turnInputViewData
 	LOGI("input data data ret=%d",ret);
 	env->ReleaseByteArrayElements(byteArray,data,0);
 }
+
+
+
+
