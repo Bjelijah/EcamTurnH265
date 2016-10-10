@@ -160,6 +160,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 //				MessageUtiles.postNewUIDialog2(MainActivity.getContext(), MainActivity.getContext().getString(R.string.verification), MainActivity.getContext().getString(R.string.ok), 1);
 	        	return;
 	        }
+			PlatformAction.getInstance().setIsTest(false);
 			SoapManager.initUrl(this);
 	        waitDialog = MessageUtiles.postWaitingDialog(MainActivity.this);
 			waitDialog.show();
@@ -183,10 +184,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
 				
 				@Override
 				protected void onPostExecute(Void result) {
-					// TODO Auto-generated method stub
 					super.onPostExecute(result);
 					waitDialog.dismiss();
 					if(loginRes == null){
+						Log.e("123", "loginRes==null");
 						return;
 					}
 					if (loginRes.getResult().toString().equals("OK")) {
@@ -224,6 +225,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 								, null, getResources().getString(R.string.ok), null, null);
 //		            	 MessageUtiles.postNewUIDialog2(MainActivity.getContext(), MainActivity.getContext().getString(R.string.password_error), MainActivity.getContext().getString(R.string.ok), 1);
 		            }else{
+		            	Log.e("123", "loging error result="+loginRes.getResult().toString());
 		            	MessageUtiles.postAlertDialog(MainActivity.this, getResources().getString(R.string.login_fail), getResources().getString(R.string.login_error), R.drawable.expander_ic_minimized
 								, null, getResources().getString(R.string.ok), null, null);
 //		            	 MessageUtiles.postNewUIDialog2(MainActivity.getContext(), MainActivity.getContext().getString(R.string.login_error), MainActivity.getContext().getString(R.string.ok), 1);
@@ -270,7 +272,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
     	
  		@Override
  		public void handleMessage(Message msg) {
- 			// TODO Auto-generated method stub
  			super.handleMessage(msg);
  			if (msg.what == POSTPASSWORDERROR) {
  				MessageUtiles.postAlertDialog(MainActivity.getContext(), MainActivity.getContext().getString(R.string.login_fail), MainActivity.getContext().getString(R.string.password_error), R.drawable.expander_ic_minimized

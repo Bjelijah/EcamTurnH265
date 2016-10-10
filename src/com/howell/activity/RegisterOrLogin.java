@@ -11,9 +11,11 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.howell.webcamH265.R;
 import com.howell.action.FingerprintUiHelper;
+import com.howell.action.PlatformAction;
 import com.howell.broadcastreceiver.HomeKeyEventBroadCastReceiver;
 import com.howell.utils.DecodeUtils;
 import com.howell.utils.MessageUtiles;
@@ -59,27 +61,31 @@ public class RegisterOrLogin extends Activity implements OnClickListener{
 		mRegister.setOnClickListener(this);
 		mLogin.setOnClickListener(this);
 		mTest.setOnClickListener(this);
-		
-		
-		
-		
-		
+
+
+
+
+
 	}
-	
+
 	@Override
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
+
+	
+		if (android.os.Build.VERSION.SDK_INT<23) {
+			return;
+		}
+		
 		if(FingerprintUiHelper.isFingerAvailable(this)){
 			FingerPrintFragment fragment = new FingerPrintFragment();
 			fragment.show(getFragmentManager(), "fingerLogin");
 		}
-		
-		
 	}
-	
-	
-	
+
+
+
 	@Override
 	public void onClick(View view) {
 		// TODO Auto-generated method stub
@@ -102,16 +108,20 @@ public class RegisterOrLogin extends Activity implements OnClickListener{
 				@Override
 				protected Void doInBackground(Void... params) {
 					// TODO Auto-generated method stub
+					PlatformAction.getInstance().setIsTest(true);
+					SoapManager.initUrl(RegisterOrLogin.this);
 					String encodedPassword = DecodeUtils.getEncodedPassword("100868");
 					String imei = PhoneConfig.getPhoneDeveceID(RegisterOrLogin.this);
 					LoginRequest loginReq = new LoginRequest("100868", "Common",encodedPassword, "1.0.0.1",imei);
 					LoginResponse loginRes = mSoapManager.getUserLoginRes(loginReq);
-				
+
 					if (loginRes.getResult().toString().equals("OK")) {
 						GetNATServerRes res = mSoapManager.getGetNATServerRes(new GetNATServerReq("100868", loginRes.getLoginSession()));
 						Log.e("Register ", res.toString());
 						Intent intent = new Intent(RegisterOrLogin.this,CameraList.class);
 						startActivity(intent);
+					}else{
+						Toast.makeText(RegisterOrLogin.this, "登入失败！", Toast.LENGTH_SHORT).show();
 					}
 
 
@@ -123,11 +133,7 @@ public class RegisterOrLogin extends Activity implements OnClickListener{
 					// TODO Auto-generated method stub
 					super.onPostExecute(result);
 					waitDialog.dismiss();
-
-
-
 				}
-
 			}.execute();
 			break;
 

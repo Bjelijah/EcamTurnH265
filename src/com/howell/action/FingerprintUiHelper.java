@@ -18,14 +18,12 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
 	private boolean mSelfCancelled;
 	
 	private Handler mHandler = new Handler(){
-
 		@Override
 		public void handleMessage(Message msg) {
 			// TODO Auto-generated method stub
 			Log.i("123", "get msg msg.what="+msg.what);
 			super.handleMessage(msg);
 		}
-		
 	};
 	
 	public FingerprintUiHelper(FingerprintManager fingerprintManager,Callback callback) {
@@ -62,8 +60,6 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
 			}catch(Exception e){
 				e.printStackTrace();
 			}
-			
-			
 			mCancellationSignal = null;
 		}
 	}

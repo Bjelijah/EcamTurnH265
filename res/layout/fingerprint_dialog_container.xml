@@ -26,7 +26,9 @@
         android:paddingTop="4dp"
         android:paddingBottom="4dp"
         android:gravity="bottom"
-        style="?android:attr/buttonBarButtonStyle">
+        style="?android:attr/buttonBarButtonStyle"
+        android:background="@drawable/fingerpaint_btn_background"
+       >
 
         <TextView 
             android:id="@+id/tv_finger_wait"
@@ -51,6 +53,7 @@
       	    android:layout_height="wrap_content"
       	    android:padding="12dp"
       	    android:text="@string/finger_cancel"
+      	   
       	    />
         
         <TextView 

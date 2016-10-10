@@ -12,6 +12,7 @@ import org.ksoap2.serialization.SoapSerializationEnvelope;
 
 import org.ksoap2.transport.HttpTransportSE;
 
+import com.howell.action.PlatformAction;
 import com.howell.entityclass.Device;
 import com.howell.entityclass.DeviceSharer;
 import com.howell.entityclass.NodeDetails;
@@ -55,9 +56,15 @@ public class SoapManager implements Serializable ,IConst{
     }
     
     public static void initUrl(Context context){
-    	String ip = SharedPreferencesUtil.getLoginServiceIP(context);
-    	int port = SharedPreferencesUtil.getLoginServicePort(context);
-    	sEndPoint = "https://"+ip+":"+port+"/HomeService/HomeMCUService.svc?wsdl";
+    	
+    	if (PlatformAction.getInstance().isTest()) {
+			sEndPoint = WSDL_URL;
+		}else{
+			String ip = SharedPreferencesUtil.getLoginServiceIP(context);
+	    	int port = SharedPreferencesUtil.getLoginServicePort(context);
+			sEndPoint = "https://"+ip+":"+port+"/HomeService/HomeMCUService.svc?wsdl";
+		}
+    	
     }
     
     public static SoapManager getInstance() {

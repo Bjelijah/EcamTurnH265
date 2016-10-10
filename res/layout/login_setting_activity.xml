@@ -97,7 +97,7 @@
                 android:layout_centerHorizontal="true"
                 android:text="@string/login_setting_introduction" />
         </RelativeLayout>
-
+<!-- drawable/new_login_btn_selector -->
         <Button
             android:id="@+id/login_sttting_bt_save"
             android:layout_width="match_parent"

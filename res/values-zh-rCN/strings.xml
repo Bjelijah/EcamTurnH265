@@ -58,7 +58,7 @@
 	<string name="save_picture">图像已保存到/eCamera目录下</string>
 	<string name="link_timeout">连接超时，请重新连接视频</string>
 	<string name="link_error">网络信号弱，请稍后连接视频</string>
-	<string name="login_error">网络信号弱，请稍后登录</string>
+	<string name="login_error">无法登录服务器，请稍后登录</string>
 	<string name="video_over_turn">视频图像180°翻转</string>
 	<string name="turn_over">图像翻转</string>
 	<string name="load_setting">正在读取设置信息</string>

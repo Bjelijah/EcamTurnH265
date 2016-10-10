@@ -46,5 +46,8 @@
     <color name="finger_green">#54b657</color>
     <color name="finger_fail">#a44853</color>
     <color name="finger_orgeen">#fd6b0b</color>
+    <color name="colorAccent">#4bc1ff</color>
+    <color name="colorPink">#FF4081</color>
+ 
     
 </resources>

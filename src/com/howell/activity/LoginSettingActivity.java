@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.android.howell.webcamH265.R;
+import com.howell.utils.IConst;
 import com.howell.utils.SharedPreferencesUtil;
 import com.howell.utils.Utils;
 
@@ -18,7 +19,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-public class LoginSettingActivity extends Activity implements OnClickListener {
+public class LoginSettingActivity extends Activity implements OnClickListener,IConst {
 	
 	ImageButton mBack;
 	Button mSave;
@@ -26,7 +27,6 @@ public class LoginSettingActivity extends Activity implements OnClickListener {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.login_setting_activity);
@@ -44,7 +44,6 @@ public class LoginSettingActivity extends Activity implements OnClickListener {
 	
 	@Override
 	public void onClick(View arg0) {
-		// TODO Auto-generated method stub
 		switch (arg0.getId()) {
 		case R.id.ib_login_settting_back:
 			finish();
@@ -100,7 +99,8 @@ public class LoginSettingActivity extends Activity implements OnClickListener {
 			return false;
 		}
 		SharedPreferencesUtil.saveLoginInfo(this, ip, port);
-		SharedPreferencesUtil.saveTurnServerInfo(this, ip, 8862);
+		//FIXME final 8862 still used maybe fix in next version
+		SharedPreferencesUtil.saveTurnServerInfo(this, ip, TEST_TURN_SERVICE_PORT);
 		return true;
 	}
 	

@@ -274,6 +274,8 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 				
 				Log.i("123", "finger start login");
 				//start login
+				PlatformAction.getInstance().setIsTest(false);
+				SoapManager.initUrl(mContext);
 				String encodedPassword = DecodeUtils.getEncodedPassword(userPassword);
 				String imei = PhoneConfig.getPhoneDeveceID(mContext);
 				LoginRequest loginReq = new LoginRequest(userName, "Common",encodedPassword, "1.0.0.1",imei);
@@ -297,11 +299,11 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 //                    editor.commit();
                     PlatformAction.getInstance().setAccount(userName);
                     PlatformAction.getInstance().setPassword(userPassword);	                     
-                	 PlatformAction.getInstance().setDeviceList(loginRes.getNodeList());
+                	PlatformAction.getInstance().setDeviceList(loginRes.getNodeList());
                     GetNATServerRes res = SoapManager.getInstance().getGetNATServerRes(new GetNATServerReq(userName, loginRes.getLoginSession()));
-                    Log.e("MainActivity", res.toString());
+                    Log.e("FingerPrintFragment", res.toString()+"  getTurnSAddress="+res.getTURNServerAddress()+" turnServerPort="+res.getTURNServerPort());
                     PlatformAction.getInstance().setTurnServerIP(res.getTURNServerAddress());
-                    PlatformAction.getInstance().setTurnServerPort(res.getTURNServerPort());
+                    PlatformAction.getInstance().setTurnServerPort(res.getTURNServerPort());//FIXME 
                     
                     Intent intent = new Intent(mContext,CamTabActivity.class);
                     startActivity(intent);

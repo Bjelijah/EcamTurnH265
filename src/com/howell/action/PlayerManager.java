@@ -109,8 +109,6 @@ public class PlayerManager implements IConst{
 	}
 	
 	
-	
-	
 	public void	loginCam(){
 //		if(doOnce){
 //			handler.sendEmptyMessage(MSG_LOGIN_CAM_OK);
@@ -119,19 +117,22 @@ public class PlayerManager implements IConst{
 //		turnServiceIP = PlatformAction.getInstance().getTurnServerIP();
 //		turnServicePort = PlatformAction.getInstance().getTurnServerPort();
 //		turnServiceIP = TEST_IP;//FIXME
-		turnServiceIP = SharedPreferencesUtil.getTurnServerIP(context);
+		if (PlatformAction.getInstance().isTest()) {
+			turnServiceIP = TEST_TURN_SERVICE_IP;
+		}else{
+			turnServiceIP = SharedPreferencesUtil.getTurnServerIP(context);
+		}
+
 //		turnServicePort = TEST_TURN_SERCICE_PORT;
 		turnServicePort = SharedPreferencesUtil.getTurnServerPort(context);
-		
-		Log.i("123", "login cam");
-
+		Log.i("123", "login cam   trunServiceIP="+turnServiceIP+"  turnServicePort"+turnServicePort);
 		new AsyncTask<Void, Void, Void>(){
 
 			@Override
 			protected Void doInBackground(Void... params) {
 				Log.i("123", "doinback");	
 				JniUtil.netInit();
-				JniUtil.transInit(turnServiceIP, TEST_TURN_SERCICE_PORT);//FIXME 8812 test
+				JniUtil.transInit(turnServiceIP, turnServicePort);
 				mIsTransDeinit = false;
 				JniUtil.transSetCallBackObj(PlayerManager.this, 0);
 				JniUtil.transSetCallbackMethodName("onConnect", 0);
@@ -160,8 +161,7 @@ public class PlayerManager implements IConst{
 				String id = PhoneConfig.getPhoneUid(context);//FIXME  android id
 				String imei = PhoneConfig.getPhoneDeveceID(context);  //imei
 				
-				JniUtil.transConnect(type, imei, PlatformAction.getInstance().getAccount(), PlatformAction.getInstance().getPassword());
-				
+				JniUtil.transConnect(type, imei, PlatformAction.getInstance().getAccount(), PlatformAction.getInstance().getPassword());				
 				Log.i("PlayManager", "transConnect ok");
 				
 				AudioAction.getInstance().initAudio();
@@ -290,7 +290,6 @@ public class PlayerManager implements IConst{
 		handler.sendEmptyMessage(PlayerActivity.SHOWPROGRESSBAR);
 		new Thread(){
 			public void run() {
-				
 				stopViewCam();
 				logoutCam();
 				transDeInit();
@@ -300,11 +299,7 @@ public class PlayerManager implements IConst{
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				
 				loginCam();
-				
-				
-				
 			};
 		}.start();
 	}

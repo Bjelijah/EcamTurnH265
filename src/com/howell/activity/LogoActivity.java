@@ -64,6 +64,7 @@ public class LogoActivity extends Activity implements TagAliasCallback{
 			mDeviceManager.clearMember();
 
 			//获取平台协议单例对象
+			PlatformAction.getInstance().setIsTest(false);
 			mSoapManager = SoapManager.getInstance();
 			SoapManager.context = this;
 			SoapManager.initUrl(this);

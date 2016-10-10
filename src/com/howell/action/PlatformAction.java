@@ -42,9 +42,17 @@ public class PlatformAction implements IConst{
 	private String deviceID = null;
 	private String account = null;
 	private String password= null;
-	
+	private boolean isTest = false;//是用100868账号登入试用e看
 	private NodeDetails curSelNode= null;
 	List<Device> deviceList = null;
+	
+	public boolean isTest(){
+		return isTest;
+	}
+	
+	public void setIsTest(boolean isTest){
+		this.isTest = isTest;
+	}
 	
 	public void setCurSelNode(NodeDetails node){
 		this.curSelNode = node;
