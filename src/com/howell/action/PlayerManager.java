@@ -125,7 +125,7 @@ public class PlayerManager implements IConst{
 
 //		turnServicePort = TEST_TURN_SERCICE_PORT;
 		turnServicePort = SharedPreferencesUtil.getTurnServerPort(context);
-		Log.i("123", "login cam   trunServiceIP="+turnServiceIP+"  turnServicePort"+turnServicePort);
+		Log.i("123", "login cam   trunServiceIP="+turnServiceIP+"  turnServicePort="+turnServicePort);
 		new AsyncTask<Void, Void, Void>(){
 
 			@Override
@@ -179,7 +179,6 @@ public class PlayerManager implements IConst{
 	public void logoutCam(){
 		//JniUtil.loginOut();
 		JniUtil.transDisconnect();
-		
 		AudioAction.getInstance().stopAudio();
 		AudioAction.getInstance().deInitAudio();
 	}
@@ -199,7 +198,6 @@ public class PlayerManager implements IConst{
 			String jsonStr = JsonUtil.subScribeJson(s);
 			Log.i("123", "jsonStr="+jsonStr);
 			JniUtil.transSubscribe(jsonStr, jsonStr.length());
-			
 			JniUtil.playView();
 			startTimerTask();
 		}else{
@@ -217,7 +215,6 @@ public class PlayerManager implements IConst{
 			String jsonStr = JsonUtil.subScribeJson(s);
 			Log.i("123", "jsonStr = "+jsonStr);
 			JniUtil.transSubscribe(jsonStr, jsonStr.length());
-			
 			JniUtil.playView();
 			startTimerTask();
 		}else{

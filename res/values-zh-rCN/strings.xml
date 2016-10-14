@@ -231,4 +231,13 @@
 	<string name="fingerprint_error">失败 请等待片刻再尝试</string>
 	<string name="fingerprint_ok">验证成功!!  正在登入..</string>
 	<string name="fingerprint_sign_error">登入失败 请用密码登入 </string>
+	
+	<!-- 唯一码发送 -->
+	<string name="phone_info_send_title">注册手机</string>
+	<string name="phone_info_send_description">手机信息未注册</string>
+	<string name="phone_info_sending">正在注册..</string>
+	<string name="phone_info_send_ok">注册成功</string>	
+	<string name="phone_info_send_fail">注册失败&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;请稍后重新注册</string>
+	<string name="phone_info_send_again">重新发送</string>
+	<string name="phone_info_not_authenticated">设备尚未被授权，需要在服务器授权</string>
 </resources>

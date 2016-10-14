@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
@@ -54,4 +54,32 @@
         <item name="android:windowExitAnimation">@anim/popup_anim_out</item>
     </style>
 
+    <style name="DialogWindowTitle">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColor">@color/dialogTitleColor</item>
+    </style>
+    
+    
+    <style name="DialogLine">
+        <item name="android:background">@color/dialog_orange</item>
+        
+    </style>
+    
+    <style name="myLightAlertDialog" parent="android:style/Theme.Holo.Light.Panel">
+    	<item name="android:windowTitleStyle">@style/DialogWindowTitle</item>
+     	<item name="android:backgroundDimEnabled">true</item>
+     
+        <item name="android:windowEnterAnimation" >@anim/shake</item>
+    </style>
+    
+    
+    <style name="DialogAnimation" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/shake</item>
+      
+    </style>
+    
+    <style name="DialogSend" parent="android:Animation">
+        <item name="android:windowExitAnimation">@anim/dialog_send_move</item>
+    </style>
+    
 </resources>

@@ -64,5 +64,8 @@ public class Util {
 		return String.valueOf(speed) + "kb/s";
 	}
 	
+	public static boolean isNewApi(){
+		return android.os.Build.VERSION.SDK_INT>22;
+	}
 	
 }

@@ -16,14 +16,15 @@ public interface IConst {
 	
 	
 //	final String WSDL_URL = "https://192.168.18.245:8850/HomeService/HomeMCUService.svc?wsdl"; //soap service  wsdl url
+
 	@Deprecated
-	final String WSDL_URL = "https://180.166.7.214:8850/HomeService/HomeMCUService.svc?wsdl"; //soap service  wsdl url
+	final String WSDL_URL = "https://180.166.7.214:8850/HomeService/HomeMCUService.svc?wsdl"; //soap service  wsdl url.now just used when login by TEST_eKan(100868) 
 //	final String WSDL_URL = null;
 	
 	//192.168.18.245
 
 	@Deprecated
-	final String TEST_TURN_SERVICE_IP = "180.166.7.214";//turn service ip
+	final String TEST_TURN_SERVICE_IP = "180.166.7.214";//turn service ip 仅作 100868 登入
 //	final String TEST_IP = null;
 	
 	final int TEST_TURN_SERVICE_PORT = 8862;//turn service port

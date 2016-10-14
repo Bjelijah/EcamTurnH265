@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
@@ -25,7 +26,7 @@ public class MessageUtiles {
 			,String negativeButtonName){
 		Dialog alertDialog = null;
 		if(positiveButtonListener != null && negativeButtonListener != null){
-			alertDialog = new AlertDialog.Builder(context).
+			alertDialog = new AlertDialog.Builder(context,R.style.myLightAlertDialog).
 				setTitle(title).   
 		        setMessage(message).   
 		        setIcon(iconId).   
@@ -33,7 +34,7 @@ public class MessageUtiles {
 		        setNegativeButton(negativeButtonName, negativeButtonListener).
 		        create();   
 		}else if(negativeButtonListener == null && positiveButtonListener != null){
-			alertDialog = new AlertDialog.Builder(context).
+			alertDialog = new AlertDialog.Builder(context,R.style.myLightAlertDialog).
 				setTitle(title).   
 			    setMessage(message).   
 			    setIcon(iconId).   
@@ -43,7 +44,7 @@ public class MessageUtiles {
 			if(positiveButtonName == null){
 				positiveButtonName = "";
 			}
-			alertDialog = new AlertDialog.Builder(context).
+			alertDialog = new AlertDialog.Builder(context,R.style.myLightAlertDialog).
 				setTitle(title).   
 			    setMessage(message).   
 			    setIcon(iconId).   
@@ -60,6 +61,8 @@ public class MessageUtiles {
 			Log.e("postAlertDialog", "positiveButtonName can not be null !");
 			return;
 		}
+		Window window = alertDialog.getWindow();
+		window.setWindowAnimations(R.style.DialogAnimation);
 		alertDialog.show();  
 	}
 	

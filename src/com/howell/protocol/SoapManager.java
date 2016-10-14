@@ -120,7 +120,7 @@ public class SoapManager implements Serializable ,IConst{
        // com.howell.activity.FakeX509TrustManager.allowAllSSL(); 
         SSLConection.allowAllSSL(context);
         HttpTransportSE transport;
-       
+     
 		transport = new HttpTransportSE(sEndPoint);
 		
 		transport.debug = true;
@@ -148,9 +148,26 @@ public class SoapManager implements Serializable ,IConst{
         rpc.addProperty("Account", loginRequest.getAccount());
         rpc.addProperty("PwdType", loginRequest.getPwdType());
         rpc.addProperty("Password", loginRequest.getPassword());
+
         rpc.addProperty("Version", loginRequest.getVersion());
-        rpc.addProperty("IEMI",loginRequest.getIEMI());
         
+        SoapObject rpcChild = new SoapObject(sNameSpace, "MCUDev");
+        
+        rpcChild.addProperty("UUID",loginRequest.getIEMI());
+        rpcChild.addProperty("Model",PhoneConfig.getPhoneModel());
+        rpcChild.addProperty("NetworkOperator",PhoneConfig.getPhoneOperator(context));
+        rpcChild.addProperty("NetType","Wifi");
+        rpcChild.addProperty("Type", "CellPhone");
+        rpcChild.addProperty("OSType", "Android");
+        rpcChild.addProperty("OSVersion",PhoneConfig.getOSVersion());
+        rpcChild.addProperty("Manufactory",PhoneConfig.getPhoneManufactory());
+        rpcChild.addProperty("IEMI",loginRequest.getIEMI());
+ 
+        rpc.addProperty("MCUDev",rpcChild);
+        
+        Log.e("123", "login UUID="+loginRequest.getIEMI());
+        
+        Log.i("123", "rpc="+rpc.toString());
         
         SoapObject object = initEnvelopAndTransport(rpc,"http://www.haoweis.com/HomeServices/MCU/userLogin");
 
@@ -1609,4 +1626,56 @@ public class SoapManager implements Serializable ,IConst{
 				+ mGetNATServerRes + "]";
 	}
     
+	
+	
+	public QueryDeviceAuthenticatedRes getDeviceAuthenticatedRes(QueryDeviceAuthenticatedReq req){
+		QueryDeviceAuthenticatedRes  res = new QueryDeviceAuthenticatedRes();
+	
+		SoapObject rpc = new SoapObject(sNameSpace, "queryMCUDeviceAuthenticatedReq");
+		rpc.addProperty("UUID", req.getUUID());
+		Log.e("123", "UUID="+req.getUUID());
+	 	SoapObject object = initEnvelopAndTransport(rpc,"http://www.haoweis.com/HomeServices/MCU/queryMCUDeviceAuthenticated");
+
+		try {
+			Object result = object.getProperty("result");
+			Log.i("123", "queryMCUDeviceAuthenticated result="+result.toString());
+			res.setResult(result.toString());
+			Object Authenticated = object.getProperty("Authenticated");
+			Log.i("123", "queryMCUDeviceAuthenticated Authenticated ="+Authenticated.toString());
+			if (Authenticated.toString().equalsIgnoreCase("True")) {
+				res.setAuthenticated(true);
+			}else{
+				res.setAuthenticated(false);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return res;
+	 	
+	}
+	
+	public UpdataDeviceAuthenticatedRes getUpdataDeviceAuthenticatedRes(UpdataDeviceAuthenticatedReq req){
+		UpdataDeviceAuthenticatedRes  res = new UpdataDeviceAuthenticatedRes();
+		SoapObject rpc = new SoapObject(sNameSpace, "uploadMCUDeviceReq");
+		rpc.addProperty("UUID",req.getUUID());
+		rpc.addProperty("Model",req.getModel());
+		rpc.addProperty("Type",req.getType());
+		rpc.addProperty("OSType",req.getOSType());
+		rpc.addProperty("OSVersion", req.getOSVersion());
+		rpc.addProperty("Manufactory",req.getManufactory());
+		rpc.addProperty("IEMI",req.getIMEI());
+		SoapObject object = initEnvelopAndTransport(rpc,"http://www.haoweis.com/HomeServices/MCU/uploadMCUDevice");
+		
+		try {
+			Object result = object.getProperty("result") ;
+			Log.i("123", "UpdataDeviceAuthenticatedRes result="+result.toString());
+			res.setResult(result.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return res;
+	}
+	
+	
 }

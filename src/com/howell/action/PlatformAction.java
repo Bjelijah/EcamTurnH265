@@ -143,6 +143,12 @@ public class PlatformAction implements IConst{
 
 	
 	
+	/**
+	 * @Deprecated H265 Turn SSL never used 
+	 * 
+	 * 
+	 */
+	@Deprecated
 	public void loginPlatform(){
 		
 		new AsyncTask<Void, Void, Boolean>() {

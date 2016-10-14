@@ -15,6 +15,7 @@ import com.howell.protocol.LoginResponse;
 import com.howell.protocol.SoapManager;
 import com.howell.utils.DecodeUtils;
 import com.howell.utils.PhoneConfig;
+import com.howell.utils.SharedPreferencesUtil;
 
 import android.app.DialogFragment;
 import android.content.Context;
@@ -52,7 +53,6 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 
 		@Override
 		public void handleMessage(Message msg) {
-			// TODO Auto-generated method stub
 			switch (msg.what) {
 			case MSG_SIGN_IN_OK:
 				dismiss();
@@ -73,7 +73,6 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 	};
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 
 		setRetainInstance(true);
@@ -82,7 +81,6 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		mContext = getContext();
 		getDialog().setTitle(getString(R.string.finger_title));
 		View v = inflater.inflate(R.layout.fingerprint_dialog_container, container, false);
@@ -105,14 +103,13 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 	
 	@Override
 	public void onStart() {
-		// TODO Auto-generated method stub
 	
 		super.onStart();
 	}
 	
+	
 	@Override
 	public void onDestroyView() {
-		// TODO Auto-generated method stub
 		Log.e("123", "on destroy view");
 		
 		mFinger.stopListening();
@@ -123,7 +120,6 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 	
 	@Override
 	public void onAuthenticated() {
-		// TODO Auto-generated method stub
 		Log.i("123", "识别到了");
 		showAuthenticationInfo(MyState.OK);
 		//开始登入
@@ -132,14 +128,12 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 
 	@Override
 	public void onFailed() {
-		// TODO Auto-generated method stub
 		Log.i("123", "识别失败");
 		showAuthenticationInfo(MyState.FAIL);
 	}
 
 	@Override
 	public void onHelp(int helpCode, CharSequence str) {
-		// TODO Auto-generated method stub
 		Log.i("123", "helpCode="+helpCode+" str="+str);
 		switch (helpCode) {
 		case 1001:
@@ -152,9 +146,7 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 
 	@Override
 	public void onError(int code,CharSequence s) {
-		// TODO Auto-generated method stub
 		Log.i("123", "识别error") ;
-	
 		if (code==7 || code == 5) {//7：连续验证失败后继续 验证     5：上次验证error后 还剩时间 秒
 			int waitSec = Integer.valueOf((String) s);
 			Log.i("123", "waitSec="+waitSec);
@@ -164,8 +156,6 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 		}else{
 			Log.e("123", "code="+code+"  s="+s);
 		}
-		
-		
 		showAuthenticationInfo(MyState.ERROR);
 	}
 	
@@ -209,7 +199,6 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
-		// TODO Auto-generated method stub
 		Log.i("123", "on touch");
 		switch (v.getId()) {
 		case R.id.tv_finger_cancel:
@@ -234,14 +223,10 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 					}
 				}, 300);	
 			}
-			
-			
 			break;
 		default:
 			break;
 		}
-		
-		
 		return false;
 	}
 
@@ -258,15 +243,12 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 
 			@Override
 			protected Boolean doInBackground(Void... params) {
-				// TODO Auto-generated method stub
-			
-				
 				int sn = (int)PhoneConfig.showUserSerialNum(mContext);
 				UserLoginDao dao = new UserLoginDao(mContext, "user.db", 1);
 				
 				List<UserLoginDBBean> l = dao.queryByNum(sn);
 				if (l.size()!=1) {
-					Log.e("123", "l.size  !=1  size="+l.size());
+					Log.e("123", "数据库 l.size  !=1  size="+l.size());
 					return false;
 				}
 				String userName = l.get(0).getUserName();
@@ -304,11 +286,8 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
                     Log.e("FingerPrintFragment", res.toString()+"  getTurnSAddress="+res.getTURNServerAddress()+" turnServerPort="+res.getTURNServerPort());
                     PlatformAction.getInstance().setTurnServerIP(res.getTURNServerAddress());
                     PlatformAction.getInstance().setTurnServerPort(res.getTURNServerPort());//FIXME 
-                    
                     Intent intent = new Intent(mContext,CamTabActivity.class);
                     startActivity(intent);
-                   
-                  
 	            }else{
 	            	return false;
 	            }
@@ -377,6 +356,4 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 			waitSec--;
 		}
 	}
-	
-	
 }

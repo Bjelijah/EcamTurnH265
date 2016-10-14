@@ -17,6 +17,7 @@ import android.view.WindowManager;
  * @author huozhihao
  * 
  * 用于获取手机屏幕长度和宽度的工具类
+ * 以及其他手机信息
  */
 
 public class PhoneConfig {
@@ -79,5 +80,29 @@ public class PhoneConfig {
 		return id;
 	}
 
+	
+	public static String getPhoneModel(){
+		Log.i("123", "getPhoneModel model = "+android.os.Build.MODEL);
+		return android.os.Build.MODEL;
+	}
+	
+	public static String getOSVersion(){
+		Log.i("123", "getOSVersion version = "+android.os.Build.VERSION.RELEASE);
+		return android.os.Build.VERSION.RELEASE;
+	}
+	
+	public static String getPhoneManufactory(){
+		Log.i("123", "getPhoneManufactory factory = "+android.os.Build.MANUFACTURER);
+		return android.os.Build.MANUFACTURER;
+	}
+	
+	public static String getPhoneOperator(Context context){
+		TelephonyManager telMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+		String name = telMgr.getSimOperatorName();
+//		String 
+		
+		Log.i("123", "name="+name);
+		return name;
+	}
 	
 }

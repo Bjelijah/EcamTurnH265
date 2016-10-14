@@ -136,7 +136,18 @@
                	android:layout_centerVertical="true"
                 />
             
-            
+            <TextView 
+                android:id="@+id/main_tv_authenticated"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:text="@string/phone_info_not_authenticated"
+                android:layout_centerHorizontal="true"
+               	android:layout_below="@id/main_tv_imei"
+               	android:layout_marginTop="20dp"
+               	android:textColor="@color/phone_authenticated"
+               	android:visibility="gone"
+                />
             
         </RelativeLayout>
      

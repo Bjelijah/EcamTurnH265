@@ -20,6 +20,7 @@ import com.howell.broadcastreceiver.HomeKeyEventBroadCastReceiver;
 import com.howell.utils.DecodeUtils;
 import com.howell.utils.MessageUtiles;
 import com.howell.utils.PhoneConfig;
+import com.howell.utils.Util;
 import com.howell.protocol.GetNATServerReq;
 import com.howell.protocol.GetNATServerRes;
 import com.howell.protocol.LoginRequest;
@@ -32,7 +33,8 @@ public class RegisterOrLogin extends Activity implements OnClickListener{
 	private Activities mActivities;
 	private HomeKeyEventBroadCastReceiver receiver;
 	private Dialog waitDialog;
-
+	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -61,11 +63,6 @@ public class RegisterOrLogin extends Activity implements OnClickListener{
 		mRegister.setOnClickListener(this);
 		mLogin.setOnClickListener(this);
 		mTest.setOnClickListener(this);
-
-
-
-
-
 	}
 
 	@Override
@@ -73,11 +70,10 @@ public class RegisterOrLogin extends Activity implements OnClickListener{
 		// TODO Auto-generated method stub
 		super.onStart();
 
-	
-		if (android.os.Build.VERSION.SDK_INT<23) {
+		if (!Util.isNewApi()) {
 			return;
 		}
-		
+
 		if(FingerprintUiHelper.isFingerAvailable(this)){
 			FingerPrintFragment fragment = new FingerPrintFragment();
 			fragment.show(getFragmentManager(), "fingerLogin");
@@ -88,7 +84,6 @@ public class RegisterOrLogin extends Activity implements OnClickListener{
 
 	@Override
 	public void onClick(View view) {
-		// TODO Auto-generated method stub
 		switch (view.getId()) {
 		case R.id.btn_register:
 			Intent intent = new Intent(RegisterOrLogin.this,Register.class);
@@ -123,8 +118,6 @@ public class RegisterOrLogin extends Activity implements OnClickListener{
 					}else{
 						Toast.makeText(RegisterOrLogin.this, "登入失败！", Toast.LENGTH_SHORT).show();
 					}
-
-
 					return null;
 				}
 
