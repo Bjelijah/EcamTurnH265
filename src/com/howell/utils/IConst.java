@@ -8,6 +8,9 @@ public interface IConst {
 	final int MSG_VIDEO_LIST_GET_OK  = 0xf2;
 	
 	
+	//finger
+	final String TEST_DEVICE_ID = "8690110294870601";  //just for test; id from meizu deviceID+"1"
+	
 	@Deprecated
 	final String TEST_ACCOUNT   	= "bxm555";//no use
 	@Deprecated

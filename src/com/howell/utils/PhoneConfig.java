@@ -20,7 +20,7 @@ import android.view.WindowManager;
  * 以及其他手机信息
  */
 
-public class PhoneConfig {
+public class PhoneConfig implements IConst{
 	private static WindowManager wm;
 	
 	public static int getPhoneWidth(Context context){
@@ -38,7 +38,8 @@ public class PhoneConfig {
 	public static String getPhoneDeveceID(Context context){
 		TelephonyManager tm = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
 		Log.i("123", "deviceid = "+tm.getDeviceId());
-		return tm.getDeviceId();
+//		return tm.getDeviceId();
+		return TEST_DEVICE_ID;
 	}
 	
 	public static long showUserSerialNum(Context context){
@@ -100,7 +101,6 @@ public class PhoneConfig {
 		TelephonyManager telMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
 		String name = telMgr.getSimOperatorName();
 //		String 
-		
 		Log.i("123", "name="+name);
 		return name;
 	}

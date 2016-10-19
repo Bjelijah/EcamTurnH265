@@ -1,32 +1,16 @@
 package com.howell.activity;
 
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import com.android.howell.webcamH265.R;
 import com.howell.action.FingerprintUiHelper;
 import com.howell.action.MyTimeMgr;
 import com.howell.action.PlatformAction;
 import com.howell.db.UserLoginDao;
-import com.howell.protocol.GetNATServerReq;
-import com.howell.protocol.GetNATServerRes;
-import com.howell.protocol.LoginRequest;
-import com.howell.protocol.LoginResponse;
-import com.howell.protocol.SoapManager;
-import com.howell.utils.DecodeUtils;
-import com.howell.utils.PhoneConfig;
-import com.howell.utils.SharedPreferencesUtil;
-import com.zys.brokenview.BrokenCallback;
 import com.zys.brokenview.BrokenTouchListener;
 import com.zys.brokenview.BrokenView;
 
 import android.app.DialogFragment;
 import android.content.Context;
-import android.content.DialogInterface.OnShowListener;
-import android.content.Intent;
 import android.hardware.fingerprint.FingerprintManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -36,13 +20,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import bean.UserLoginDBBean;
 
-public class FingerPrintFragment extends DialogFragment implements FingerprintUiHelper.Callback,OnTouchListener{
+public class FingerPrintSaveFragment extends DialogFragment implements FingerprintUiHelper.Callback,OnTouchListener{
+
+	
 	private static final int MSG_SIGN_IN_FAIL 	= 0xa0;
 	private static final int MSG_SIGN_IN_OK 	= 0xa1;
 	public static final int MSG_ERROR_WAIT_OK		= 0xa2;
@@ -51,7 +36,7 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 	private BrokenTouchListener colorfulListener;
 	private OnCreateViewFinish o;
 	
-	TextView mTvCancel,mTvPassword,mTvFingerState,mTvFingerWait;
+	TextView mTvCancel,mTvPassword,mTvFingerState,mTvFingerWait,mTvDescription;
 	FingerprintUiHelper m;
 	Context mContext;
 	FingerprintUiHelper mFinger;
@@ -59,6 +44,23 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 //	Timer mWaitTimer = null;
 //	MyWaitTimerTask mWaitTimeTask = null;
 	MyTimeMgr mTimemgr = MyTimeMgr.getInstance();
+	
+	Handler mParentHandler;
+	String mUserName;
+	String mUserPsd;
+	
+	public FingerPrintSaveFragment setHandler(Handler h){
+		this.mParentHandler = h;
+		return this;
+	}
+	public FingerPrintSaveFragment setUserName(String name){
+		mUserName = name;
+		return this;
+	}
+	public FingerPrintSaveFragment setUserPassword(String pwd){
+		mUserPsd = pwd;
+		return this;
+	}
 	
 	
 	Handler mHandler = new Handler(){
@@ -100,12 +102,17 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		mContext = getContext();
-		getDialog().setTitle(getString(R.string.finger_title));
+		getDialog().setTitle(getString(R.string.finger_save_title));
+		
+		
 		View v = inflater.inflate(R.layout.fingerprint_dialog_container, container, false);
 		mTvCancel = (TextView) v.findViewById(R.id.tv_finger_cancel);
 		mTvCancel.setOnTouchListener(this);
 		mTvPassword = (TextView) v.findViewById(R.id.tv_finger_password);
-		mTvPassword.setOnTouchListener(this);
+		mTvPassword.setVisibility(View.GONE);
+		mTvDescription = (TextView) v.findViewById(R.id.fingerprint_description);
+		mTvDescription.setText(mContext.getString(R.string.fingerprint_save_description));
+		
 		mFinger = new FingerprintUiHelper(mContext.getSystemService(FingerprintManager.class), this);
 		mFinger.startListening(null);
 		mTvFingerState = (TextView) v.findViewById(R.id.fingerprint_status);
@@ -167,7 +174,17 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 		Log.i("123", "识别到了");
 		showAuthenticationInfo(MyState.OK);
 		//开始登入
-		signIn(fingerID);
+		if(saveDB(fingerID)){
+			mParentHandler.sendEmptyMessageDelayed(MainActivity.POSTSAVEOK,500);
+		}else{
+			Toast.makeText(mContext, "保存失败！！", Toast.LENGTH_LONG).show();
+		}
+		mTvCancel.postDelayed(new Runnable() {
+			public void run() {
+				dismiss();
+			}
+		}, 300);
+		
 	}
 
 	@Override
@@ -254,6 +271,7 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 		case R.id.tv_finger_cancel:
 			Log.i("123", "tv_finger_cancel"+" act="+event.getAction());
 			if (event.getAction()==MotionEvent.ACTION_DOWN) {
+				
 				mTvCancel.postDelayed(new Runnable() {
 					public void run() {
 						dismiss();
@@ -262,18 +280,6 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 			}
 			break;
 
-		case R.id.tv_finger_password:
-			Log.i("123", "tv_finger_password"+"act="+event.getAction());
-			if (event.getAction()==MotionEvent.ACTION_DOWN) {
-				mTvPassword.postDelayed(new Runnable() {
-					public void run() {
-						dismiss();
-						Intent intent = new Intent(mContext,MainActivity.class);
-						startActivity(intent);
-					}
-				}, 300);	
-			}
-			break;
 		default:
 			break;
 		}
@@ -288,121 +294,28 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 		SIGN_ERROR;
 	}
 	
-	private void signIn(final int fingerID){
-		new AsyncTask<Void, Void, Boolean>() {
-
-			@Override
-			protected Boolean doInBackground(Void... params) {
-//				int sn = (int)PhoneConfig.showUserSerialNum(mContext);
-				UserLoginDao dao = new UserLoginDao(mContext, "user.db", 1);
-				
-				List<UserLoginDBBean> l = dao.queryByNum(fingerID);
-				if (l.size()!=1) {
-					Log.e("123", "数据库  find  l.size  !=1  size="+l.size());
-					dao.close();
-					return false;
-				}
-				dao.close();
-				String userName = l.get(0).getUserName();
-				String userPassword = l.get(0).getUserPassword();
-				
-				Log.e("123", "sign in    finger start login"+"   user name="+userName+"  psw="+userPassword);
-				//start login
-				PlatformAction.getInstance().setIsTest(false);
-				SoapManager.initUrl(mContext);
-				String encodedPassword = DecodeUtils.getEncodedPassword(userPassword);
-				String imei = PhoneConfig.getPhoneDeveceID(mContext);
-				LoginRequest loginReq = new LoginRequest(userName, "Common",encodedPassword, "1.0.0.1",imei);
-				LoginResponse loginRes = null;
-				try{
-					loginRes=SoapManager.getInstance().getUserLoginRes(loginReq);
-				}catch(Exception e){
-					e.printStackTrace();
-					Log.e("123", "finger start error  we return false");
-					return false;
-				}
-			
-				
-				Log.i("123", "login get result");
-				if (loginRes.getResult().toString().equals("OK")) {
-//                    SharedPreferences sharedPreferences = getSharedPreferences(
-//                            "set", Context.MODE_PRIVATE);
-//                    Editor editor = sharedPreferences.edit();
-//                    editor.putString("account", account);
-//                    editor.putString("password", password);
-//                    editor.commit();
-                    PlatformAction.getInstance().setAccount(userName);
-                    PlatformAction.getInstance().setPassword(userPassword);	                     
-                	PlatformAction.getInstance().setDeviceList(loginRes.getNodeList());
-                    GetNATServerRes res = SoapManager.getInstance().getGetNATServerRes(new GetNATServerReq(userName, loginRes.getLoginSession()));
-                    Log.e("FingerPrintFragment", res.toString()+"  getTurnSAddress="+res.getTURNServerAddress()+" turnServerPort="+res.getTURNServerPort());
-                    PlatformAction.getInstance().setTurnServerIP(res.getTURNServerAddress());
-                    PlatformAction.getInstance().setTurnServerPort(res.getTURNServerPort());//FIXME 
-                    Intent intent = new Intent(mContext,CamTabActivity.class);
-                    startActivity(intent);
-	            }else{
-	            	return false;
-	            }
-				return true;	
-			}
-			protected void onPostExecute(Boolean result) {
-				if (result) {
-					mHandler.sendEmptyMessage(MSG_SIGN_IN_OK);
-				}else{
-					mHandler.sendEmptyMessage(MSG_SIGN_IN_FAIL);
-				}
-				
-			};
-		
-		}.execute();
-		
-		
-		
-	}
-
 	
-	class MyBrokenCallback extends BrokenCallback{
+	private boolean saveDB(int id){
+		boolean res = true;
+		int userNum = id;
+		String userName = mUserName;
+		String userPassword = mUserPsd;
+		UserLoginDBBean info = new UserLoginDBBean(userNum, userName, userPassword);
 
-		@Override
-		public void onStart(View v) {
-			Log.i("123", "MyBrokenCallback :"+v.getId());
-			super.onStart(v);
+		UserLoginDao dao = new UserLoginDao(mContext, "user.db", 1);
+		if (dao.findByNum(userNum)) {
+			dao.updataByNum(info);
+		}else{
+			dao.insert(info);
 		}
-
-		@Override
-		public void onCancel(View v) {
-			Log.i("123", "onCancel :"+v.getId());
-			super.onCancel(v);
-		}
-
-		@Override
-		public void onRestart(View v) {
-			Log.i("123", "onRestart :"+v.getId());
-			super.onRestart(v);
-		}
-
-		@Override
-		public void onFalling(View v) {
-			Log.i("123", "onFalling :"+v.getId());
-			super.onFalling(v);
-		}
-
-		@Override
-		public void onFallingEnd(View v) {
-			Log.i("123", "onFallingEnd :"+v.getId());
-			super.onFallingEnd(v);
-		}
-
-		@Override
-		public void onCancelEnd(View v) {
-			Log.i("123", "onCancelEnd :"+v.getId());
-			super.onCancelEnd(v);
-		}
-		
+		dao.close();
+		return res;
 	}
+	
+	
 	
 	public interface OnCreateViewFinish{
 		void onShowListener();
 	}
-	
+
 }

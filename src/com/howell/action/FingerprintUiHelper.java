@@ -1,5 +1,9 @@
 package com.howell.action;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.hardware.fingerprint.FingerprintManager;
@@ -48,8 +52,6 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
 		mCancellationSignal = new CancellationSignal();
 		mSelfCancelled = false;
 		mFingerprintManager.authenticate(cryptoObject, mCancellationSignal, 0, this, mHandler);
-		
-	
 	}
 	
 	public void stopListening(){
@@ -69,16 +71,23 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
 	@Override
 	public void onAuthenticationError(int errorCode, CharSequence errString) {
 		// TODO Auto-generated method stub
-		if (errorCode==7) {//连续验证失败导致的错误   在(int)errString 秒后可重新验证
-			Log.e("123", "onAuthenticationError:"+"errorCode="+errorCode+"   errString="+errString);
-		}
+		Log.i("123", "onAuthenticationError:"+"errorCode="+errorCode+"   errString="+errString);
 		
-		try{
-			mCallback.onError(errorCode,errString);
-		}catch(Exception e){
-			e.printStackTrace();
+		switch (errorCode) {
+		case FingerprintManager.FINGERPRINT_ERROR_CANCELED:
+			mSelfCancelled = true;
+			break;
+		case FingerprintManager.FINGERPRINT_ERROR_LOCKOUT:
+			try{
+				mCallback.onError(errorCode,errString);
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			break;
+			
+		default:
+			break;
 		}
-		
 	}
 	
 	@Override
@@ -98,13 +107,66 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
 	@Override
 	public void onAuthenticationSucceeded(AuthenticationResult result) {
 		// TODO Auto-generated method stub
-		Log.e("123", "onAuthenticationSucceeded");
-		mCallback.onAuthenticated();
+	
+		Class<AuthenticationResult> c = AuthenticationResult.class;
+		Method method = null;
+		try {
+			method = c.getMethod("getFingerprint");
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Log.i("123", "method="+method);
+		method.setAccessible(true);
+		Object o = null;
+		String className = null;
+		try {
+			 o = method.invoke(result, null);
+			 className = o.getClass().getName();
+			 Log.i("123", "o="+o.toString()+" class="+o.getClass().getName());
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+		int fingerID = 0;
+		
+		try {
+			Class fingerprint = Class.forName(className);
+			Method method2 = fingerprint.getMethod("getFingerId");
+			method2.setAccessible(true);
+			Object name = method2.invoke(o, null);
+			Log.i("123", "name="+name.toString());
+			fingerID = Integer.valueOf(name.toString());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Log.e("123", "onAuthenticationSucceeded   fingerID="+fingerID);
+		mCallback.onAuthenticated(fingerID);
 	}
 	
 	
 	public interface Callback{
-		void onAuthenticated();
+		void onAuthenticated(int id);
 		void onFailed();
 		void onHelp(int helpCode,CharSequence str);
 		void onError(int code,CharSequence s);

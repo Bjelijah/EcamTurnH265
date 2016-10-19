@@ -240,4 +240,8 @@
 	<string name="phone_info_send_fail">注册失败&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;请稍后重新注册</string>
 	<string name="phone_info_send_again">重新发送</string>
 	<string name="phone_info_not_authenticated">设备尚未被授权，需要在服务器授权</string>
+	
+	<string name="finger_save_title">保存指纹</string>
+	<string name="fingerprint_save_description">保存指纹与账号信息</string>
+	
 </resources>

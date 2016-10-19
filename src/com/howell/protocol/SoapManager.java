@@ -120,7 +120,7 @@ public class SoapManager implements Serializable ,IConst{
        // com.howell.activity.FakeX509TrustManager.allowAllSSL(); 
         SSLConection.allowAllSSL(context);
         HttpTransportSE transport;
-     
+        Log.i("123", "sEndPoint="+sEndPoint);
 		transport = new HttpTransportSE(sEndPoint);
 		
 		transport.debug = true;
@@ -167,7 +167,7 @@ public class SoapManager implements Serializable ,IConst{
         
         Log.e("123", "login UUID="+loginRequest.getIEMI());
         
-        Log.i("123", "rpc="+rpc.toString());
+//        Log.i("123", "rpc="+rpc.toString());
         
         SoapObject object = initEnvelopAndTransport(rpc,"http://www.haoweis.com/HomeServices/MCU/userLogin");
 

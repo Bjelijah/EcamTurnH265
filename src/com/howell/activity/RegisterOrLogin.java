@@ -21,6 +21,9 @@ import com.howell.utils.DecodeUtils;
 import com.howell.utils.MessageUtiles;
 import com.howell.utils.PhoneConfig;
 import com.howell.utils.Util;
+import com.zys.brokenview.BrokenCallback;
+import com.zys.brokenview.BrokenTouchListener;
+import com.zys.brokenview.BrokenView;
 import com.howell.protocol.GetNATServerReq;
 import com.howell.protocol.GetNATServerRes;
 import com.howell.protocol.LoginRequest;
@@ -34,7 +37,7 @@ public class RegisterOrLogin extends Activity implements OnClickListener{
 	private HomeKeyEventBroadCastReceiver receiver;
 	private Dialog waitDialog;
 	
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -75,8 +78,15 @@ public class RegisterOrLogin extends Activity implements OnClickListener{
 		}
 
 		if(FingerprintUiHelper.isFingerAvailable(this)){
-			FingerPrintFragment fragment = new FingerPrintFragment();
-			fragment.show(getFragmentManager(), "fingerLogin");
+			FingerPrintFragment fingerFragment = new FingerPrintFragment();
+	
+			fingerFragment.show(getFragmentManager(), "fingerLogin");
+			
+			//set brokeView
+			
+		
+			
+			
 		}
 	}
 
@@ -108,7 +118,15 @@ public class RegisterOrLogin extends Activity implements OnClickListener{
 					String encodedPassword = DecodeUtils.getEncodedPassword("100868");
 					String imei = PhoneConfig.getPhoneDeveceID(RegisterOrLogin.this);
 					LoginRequest loginReq = new LoginRequest("100868", "Common",encodedPassword, "1.0.0.1",imei);
-					LoginResponse loginRes = mSoapManager.getUserLoginRes(loginReq);
+					LoginResponse loginRes = null;
+					try {
+						 loginRes = mSoapManager.getUserLoginRes(loginReq);
+					} catch (Exception e) {
+						// TODO: handle exception
+						Toast.makeText(RegisterOrLogin.this, "登入失败！", Toast.LENGTH_SHORT).show();
+						return null;
+					}
+				
 
 					if (loginRes.getResult().toString().equals("OK")) {
 						GetNATServerRes res = mSoapManager.getGetNATServerRes(new GetNATServerReq("100868", loginRes.getLoginSession()));
@@ -143,4 +161,47 @@ public class RegisterOrLogin extends Activity implements OnClickListener{
 		mActivities.toString();
 		unregisterReceiver(receiver);
 	}
+	
+	private class MyBrokenCallback extends BrokenCallback{
+
+		@Override
+		public void onStart(View v) {
+			Log.i("123", "MyBrokenCallback :"+v.getId());
+			super.onStart(v);
+		}
+
+		@Override
+		public void onCancel(View v) {
+			Log.i("123", "onCancel :"+v.getId());
+			super.onCancel(v);
+		}
+
+		@Override
+		public void onRestart(View v) {
+			Log.i("123", "onRestart :"+v.getId());
+			super.onRestart(v);
+		}
+
+		@Override
+		public void onFalling(View v) {
+			Log.i("123", "onFalling :"+v.getId());
+			super.onFalling(v);
+		}
+
+		@Override
+		public void onFallingEnd(View v) {
+			Log.i("123", "onFallingEnd :"+v.getId());
+			super.onFallingEnd(v);
+		}
+
+		@Override
+		public void onCancelEnd(View v) {
+			Log.i("123", "onCancelEnd :"+v.getId());
+			super.onCancelEnd(v);
+		}
+		
+	}
+
+	
+	
 }

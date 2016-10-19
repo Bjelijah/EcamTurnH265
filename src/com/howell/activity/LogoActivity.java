@@ -124,7 +124,10 @@ public class LogoActivity extends Activity implements TagAliasCallback{
 							String encodedPassword = DecodeUtils.getEncodedPassword(password);
 							String imei = PhoneConfig.getPhoneDeveceID(LogoActivity.this);
 							LoginRequest loginReq = new LoginRequest(account, "Common",encodedPassword, "1.0.0.1",imei);
+					
+							
 							LoginResponse loginRes = mSoapManager.getUserLoginRes(loginReq);
+							
 							if(loginRes.getResult().equals("OK")){
 								//登录成功则进入摄像机列表界面
 								GetNATServerRes res = mSoapManager.getGetNATServerRes(new GetNATServerReq(account, loginRes.getLoginSession()));

@@ -238,4 +238,8 @@
 	<string name="phone_info_send_fail">register failed&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;plz wait and try again</string>
 	<string name="phone_info_send_again">send again</string>
 	<string name="phone_info_not_authenticated">Device not be authenticated</string>
+	
+	<string name="finger_save_title">Finger Save</string>
+	<string name="fingerprint_save_description">Save FingerPrint and Account Information</string>
+	
 </resources>

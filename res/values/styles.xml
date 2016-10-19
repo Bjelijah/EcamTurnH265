@@ -78,6 +78,12 @@
       
     </style>
     
+    <style name="DialogAnimationShake" parent="android:Animation">
+    
+         <item name="android:animation">@anim/shake</item>
+    </style>
+    
+    
     <style name="DialogSend" parent="android:Animation">
         <item name="android:windowExitAnimation">@anim/dialog_send_move</item>
     </style>

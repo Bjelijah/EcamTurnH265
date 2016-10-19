@@ -2,6 +2,7 @@ package com.howell.activity;
 
 
 import com.android.howell.webcamH265.R;
+import com.google.zxing.client.result.ISBNParsedResult;
 import com.howell.action.PlatformAction;
 import com.howell.broadcastreceiver.HomeKeyEventBroadCastReceiver;
 import com.howell.db.UserLoginDao;
@@ -20,11 +21,14 @@ import com.howell.utils.PhoneConfig;
 import com.howell.utils.SharedPreferencesUtil;
 import com.howell.utils.Util;
 
+import android.accounts.Account;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.PendingIntent.CanceledException;
+import android.app.PendingIntent.OnFinished;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -36,6 +40,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -63,12 +68,17 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	int mLoginServciePort;
 	public ProgressDialog mLoadingDialog;
 	PhoneInfoSendDailog mInfoSendDailog;
+	private LoginTemp mLoginTemp;
 	private static final int POSTPASSWORDERROR = 1;
 	private static final int POSTNULLINFO = 2;
 	private static final int POSTTOAST = 3;
 	private static final int POSTLINKERROR = 4;
 	private static final int POSTACCOUNTERROR = 5;
-
+	private static final int POSTLOGINFINISH = 6;
+	public static final int POSTSAVEOK = 7;
+	
+	
+	
 	private MessageHandler handler;
 
 	private static MainActivity mActivity;
@@ -83,6 +93,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	private ImageButton mBack,mSetting;
 	private Dialog waitDialog;
 	private boolean isSendDialogShow = false;
+
+	//login task
+	LoginTaskThread mLoginTask = null;
+
+	
+	AsyncTask mBindTask = null;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -154,21 +171,19 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 	@Override
 	protected void onStart() {
-		// TODO Auto-generated method stub
 		if (doCheckServiceIP()) {
 			dobindLoginService();
 		}
-	
-	
+
+
 		super.onStart();
 	}
 
-	
-	
-	
+
+
+
 	@Override
 	protected void onPause() {
-		// TODO Auto-generated method stub
 		//dismissSendDailog();
 		super.onPause();
 	}
@@ -180,7 +195,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		if (ip.equals("")) {
 			Intent intent = new Intent(this,LoginSettingActivity.class);
 			startActivity(intent);
-			
 			return false;
 		}
 		return res;
@@ -189,15 +203,20 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	private void dobindLoginService(){
 		//
 		Log.e("123", "do bind login server");
-		new AsyncTask<Void, Void, Boolean>(){
-
+		mBindTask = new AsyncTask<Void, Void, Boolean>(){
 			@Override
 			protected Boolean doInBackground(Void... params) {
 				boolean res = false;
 				QueryDeviceAuthenticatedReq req = new QueryDeviceAuthenticatedReq(PhoneConfig.getPhoneDeveceID(MainActivity.this));
 				QueryDeviceAuthenticatedRes resObJ = null;
+				if (isCancelled()) {
+					return false;
+				}
 				try {
 					resObJ = mSoapManager.getDeviceAuthenticatedRes(req);
+					if (isCancelled()) {
+						return false;
+					}
 					if (resObJ.getResult().toString().equals("OK")) {
 						res = true;
 					}
@@ -215,18 +234,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
 						});
 					}
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 					return false;
 				}
-				
-				
 				return res;
 			}
 
 			protected void onPostExecute(Boolean result) {
 				if (!result) {
-					Log.e("123", "show  send dailog");
+					Log.e("123", "show send dailog");
 					new Runnable() {
 						public void run() {
 							showSendDailog();
@@ -255,7 +271,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 		}else{
 			//用 alart 发送
-
 			//			SendInfoDialog sDialog = new SendInfoDialog(this);
 			//			sDialog.show();
 			showAlartDialog();
@@ -268,9 +283,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		if (isSendDialogShow) {
 			return;
 		}
-
-
-
 		String IEMI = PhoneConfig.getPhoneDeveceID(this);
 		AlertDialog alertDialog = new AlertDialog.Builder(this,R.style.myLightAlertDialog) 
 				.setTitle(getString(R.string.phone_info_send_title))   
@@ -310,8 +322,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
 								}
 								Toast.makeText(MainActivity.this, string, Toast.LENGTH_LONG).show();
 							};
-
-
 						}.execute();
 					}
 				})   
@@ -333,11 +343,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
 				}).create();
 		Window window = alertDialog.getWindow();
 		window.setWindowAnimations(R.style.DialogAnimation);
-//		window.setWindowAnimations(R.style.DialogSend);
+		//		window.setWindowAnimations(R.style.DialogSend);
 		alertDialog.show();  
 		isSendDialogShow = true;
 	}
-
 
 
 	private static MainActivity getContext(){
@@ -346,7 +355,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
 		switch (v.getId()) {
 		case R.id.ib_login_back:
 			finish();
@@ -367,85 +375,22 @@ public class MainActivity extends Activity implements View.OnClickListener {
 			PlatformAction.getInstance().setIsTest(false);
 			SoapManager.initUrl(this);
 			waitDialog = MessageUtiles.postWaitingDialog(MainActivity.this);
+			waitDialog.setOnCancelListener(new OnCancelListener() {
+
+				@Override
+				public void onCancel(DialogInterface dialog) {
+					Log.e("123", "wait Dialog on cancel");
+					if (mLoginTask!=null) {
+						Log.i("123", "mlogintask cancel");
+						mLoginTask.cancel();
+						mLoginTask = null;
+					}
+				}
+			});
 			waitDialog.show();
-			new AsyncTask<Void, Integer, Void>() {
-				LoginResponse loginRes;
-				@Override
-				protected Void doInBackground(Void... params) {
-					// TODO Auto-generated method stub
-					try{
-						String encodedPassword = DecodeUtils.getEncodedPassword(password);
-						String imei = PhoneConfig.getPhoneDeveceID(MainActivity.this);
-						LoginRequest loginReq = new LoginRequest(account, "Common",encodedPassword, "1.0.0.1",imei);
-						loginRes = mSoapManager.getUserLoginRes(loginReq);
-						Log.e("loginRes",loginRes.getResult().toString());
-					}catch (Exception e) {
-						// TODO: handle exception
-						handler.sendEmptyMessage(POSTLINKERROR);
-					}
-					return null;
-				}
-
-				@Override
-				protected void onPostExecute(Void result) {
-					super.onPostExecute(result);
-					waitDialog.dismiss();
-					if(loginRes == null){
-						Log.e("123", "loginRes==null");
-						return;
-					}
-					if (loginRes.getResult().toString().equals("OK")) {
-						SharedPreferences sharedPreferences = getSharedPreferences(
-								"set", Context.MODE_PRIVATE);
-						Editor editor = sharedPreferences.edit();
-						editor.putString("account", account);
-						editor.putString("password", password);
-						editor.commit();
-						PlatformAction.getInstance().setAccount(account);
-						PlatformAction.getInstance().setPassword(password);	                     
-						PlatformAction.getInstance().setDeviceList(loginRes.getNodeList());
-						GetNATServerRes res = mSoapManager.getGetNATServerRes(new GetNATServerReq(account, loginRes.getLoginSession()));
-						Log.e("MainActivity", res.toString());
-						PlatformAction.getInstance().setTurnServerIP(res.getTURNServerAddress());
-						PlatformAction.getInstance().setTurnServerPort(res.getTURNServerPort());
-						saveUserInfo2Db();
-						Intent intent = new Intent(MainActivity.this,CamTabActivity.class);
-						startActivity(intent);
-						finish();
-
-						if (mActivities.getmActivityList().get("RegisterOrLogin")!=null) {
-							mActivities.getmActivityList().get("RegisterOrLogin").finish();
-						}else{
-							Log.e("123", "RegisterOrLogin == null");
-						}
-
-
-					}else if(loginRes.getResult().toString().equals("AccountNotExist")){
-						MessageUtiles.postAlertDialog(MainActivity.this, getResources().getString(R.string.login_fail), getResources().getString(R.string.account_error), R.drawable.expander_ic_minimized
-								, null, getResources().getString(R.string.ok), null, null);
-						//		            	 MessageUtiles.postNewUIDialog2(MainActivity.getContext(), MainActivity.getContext().getString(R.string.account_error), MainActivity.getContext().getString(R.string.ok), 1);
-					}else if(loginRes.getResult().toString().equals("Authencation")){
-						MessageUtiles.postAlertDialog(MainActivity.this, getResources().getString(R.string.login_fail), getResources().getString(R.string.password_error), R.drawable.expander_ic_minimized
-								, null, getResources().getString(R.string.ok), null, null);
-						//		            	 MessageUtiles.postNewUIDialog2(MainActivity.getContext(), MainActivity.getContext().getString(R.string.password_error), MainActivity.getContext().getString(R.string.ok), 1);
-					}else if(loginRes.getResult().toString().equals("DeviceUnauthorized")){
-						//设备未授权
-						Log.i("123", "设备未授权 或没有注册");
-						MessageUtiles.postAlertDialog(MainActivity.this, getResources().getString(R.string.login_fail), getResources().getString(R.string.phone_info_not_authenticated), R.drawable.expander_ic_minimized
-								, null,  getResources().getString(R.string.ok), null, null);
-						
-						
-						
-					}
-					else{
-						Log.e("123", "loging error result="+loginRes.getResult().toString());
-						MessageUtiles.postAlertDialog(MainActivity.this, getResources().getString(R.string.login_fail), getResources().getString(R.string.login_error), R.drawable.expander_ic_minimized
-								, null, getResources().getString(R.string.ok), null, null);
-						//		            	 MessageUtiles.postNewUIDialog2(MainActivity.getContext(), MainActivity.getContext().getString(R.string.login_error), MainActivity.getContext().getString(R.string.ok), 1);
-					}
-				}
-
-			}.execute();
+			Log.i("123", "execute task");
+			mLoginTask = new LoginTaskThread(password,account);
+			mLoginTask.start();
 			break;
 		default:
 			break;
@@ -453,6 +398,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 	}
 
+	@Deprecated
 	private void saveUserInfo2Db(){
 		long sn = PhoneConfig.showUserSerialNum(this);
 		if (sn<0) {
@@ -481,7 +427,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	}
 
 
-	public static class MessageHandler extends Handler{
+	public  class MessageHandler extends Handler{
 
 		@Override
 		public void handleMessage(Message msg) {
@@ -509,18 +455,194 @@ public class MainActivity extends Activity implements View.OnClickListener {
 			if(msg.what == POSTTOAST){
 				MessageUtiles.postToast(MainActivity.getContext(), MainActivity.getContext().getString(R.string.loading), 1000);
 			}
+			if (msg.what == POSTLOGINFINISH) {
+				Bundle b = (Bundle) msg.obj;
+				LoginResponse l = (LoginResponse) b.getSerializable("loginRes");
+				String pwd = b.getString("password");
+				String acc = b.getString("account");
 
+				loginRes(l,pwd,acc);
+			}
+			if (msg.what == POSTSAVEOK) {
+				foo();
+			}
 		}
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		if (mBindTask!=null) {
+			mBindTask.cancel(true);
+			mBindTask = null;
+		}
 		mActivities.removeActivity("MainActivity");
 		unregisterReceiver(receiver);
 	}
 
 
+	
+	
+	
+	private class LoginTaskThread extends Thread{
+		LoginResponse loginRes;
+		String password= null;
+		String account = null;
+		boolean isCancel = false;
+		public LoginTaskThread(String pwd,String acc) {
+			this.password = pwd;
+			this.account = acc;
+			isCancel = false;
+		}
+
+		public void cancel(){
+			isCancel = true;
+		}
+
+		@Override
+		public void run() {
+			try{
+				String encodedPassword = DecodeUtils.getEncodedPassword(password);
+				String imei = PhoneConfig.getPhoneDeveceID(MainActivity.this);
+				LoginRequest loginReq = new LoginRequest(account, "Common",encodedPassword, "1.0.0.1",imei);
+				loginRes = mSoapManager.getUserLoginRes(loginReq);
+				Log.e("loginRes",loginRes.getResult().toString());
+			}catch (Exception e) {
+				if (!isCancel) {
+					handler.sendEmptyMessage(POSTLINKERROR);
+				}
+				return;
+			}
+			if (isCancel) {
+				return;
+			}
+			
+			
+			Message msg = new Message();
+			msg.what = POSTLOGINFINISH;
 
 
+			Bundle bundle = new Bundle();
+			bundle.putSerializable("loginRes", loginRes);
+			bundle.putString("password", password);
+			bundle.putString("account", account);
+			msg.obj = bundle;
+	
+			handler.sendMessage(msg);
+			
+
+
+			super.run();
+		}
+
+	}
+
+
+
+
+
+
+
+
+	private void loginRes(LoginResponse loginRes ,String password,String account){
+		waitDialog.dismiss();
+		if(loginRes == null){
+			Log.e("123", "loginRes==null");
+			return;
+		}
+		if (loginRes.getResult().toString().equals("OK")) {	
+			mLoginTemp = new LoginTemp(loginRes, password, account);
+			
+			//绑定指纹
+			FingerPrintSaveFragment fragment = new FingerPrintSaveFragment();
+			fragment.setHandler(handler).setUserName(account).setUserPassword(password);
+			fragment.show(getFragmentManager(), "fingerSave");
+		}else if(loginRes.getResult().toString().equals("AccountNotExist")){
+			MessageUtiles.postAlertDialog(MainActivity.this, getResources().getString(R.string.login_fail), getResources().getString(R.string.account_error), R.drawable.expander_ic_minimized
+					, null, getResources().getString(R.string.ok), null, null);
+			//		            	 MessageUtiles.postNewUIDialog2(MainActivity.getContext(), MainActivity.getContext().getString(R.string.account_error), MainActivity.getContext().getString(R.string.ok), 1);
+		}else if(loginRes.getResult().toString().equals("Authencation")){
+			MessageUtiles.postAlertDialog(MainActivity.this, getResources().getString(R.string.login_fail), getResources().getString(R.string.password_error), R.drawable.expander_ic_minimized
+					, null, getResources().getString(R.string.ok), null, null);
+			//		            	 MessageUtiles.postNewUIDialog2(MainActivity.getContext(), MainActivity.getContext().getString(R.string.password_error), MainActivity.getContext().getString(R.string.ok), 1);
+		}else if(loginRes.getResult().toString().equals("DeviceUnauthorized")){
+			//设备未授权
+			Log.i("123", "设备未授权 或没有注册");
+			MessageUtiles.postAlertDialog(MainActivity.this, getResources().getString(R.string.login_fail), getResources().getString(R.string.phone_info_not_authenticated), R.drawable.expander_ic_minimized
+					, null,  getResources().getString(R.string.ok), null, null);
+		}
+		else{
+			Log.e("123", "loging error result="+loginRes.getResult().toString());
+			MessageUtiles.postAlertDialog(MainActivity.this, getResources().getString(R.string.login_fail), getResources().getString(R.string.login_error), R.drawable.expander_ic_minimized
+					, null, getResources().getString(R.string.ok), null, null);
+			//		            	 MessageUtiles.postNewUIDialog2(MainActivity.getContext(), MainActivity.getContext().getString(R.string.login_error), MainActivity.getContext().getString(R.string.ok), 1);
+		}
+	}
+	
+	private void foo(){
+		
+		
+		LoginResponse loginRes = mLoginTemp.getLoginRes();
+		String account = mLoginTemp.getAccount();
+		String password = mLoginTemp.getPassword();
+		SharedPreferences sharedPreferences = getSharedPreferences(
+				"set", Context.MODE_PRIVATE);
+		Editor editor = sharedPreferences.edit();
+		editor.putString("account", account);
+		editor.putString("password", password);
+		editor.commit();
+		PlatformAction.getInstance().setAccount(account);
+		PlatformAction.getInstance().setPassword(password);	                     
+		PlatformAction.getInstance().setDeviceList(loginRes.getNodeList());
+		GetNATServerRes res = mSoapManager.getGetNATServerRes(new GetNATServerReq(account, loginRes.getLoginSession()));
+		Log.e("MainActivity", res.toString());
+		PlatformAction.getInstance().setTurnServerIP(res.getTURNServerAddress());
+		PlatformAction.getInstance().setTurnServerPort(res.getTURNServerPort());
+		
+//		saveUserInfo2Db();
+		
+		
+		Intent intent = new Intent(MainActivity.this,CamTabActivity.class);
+		startActivity(intent);
+		finish();
+
+		if (mActivities.getmActivityList().get("RegisterOrLogin")!=null) {
+			mActivities.getmActivityList().get("RegisterOrLogin").finish();
+		}else{
+			Log.e("123", "RegisterOrLogin == null");
+		}
+	}
+	
+	
+	
+	class LoginTemp{
+		LoginResponse loginRes ;
+		String password;
+		String account;
+		public LoginResponse getLoginRes() {
+			return loginRes;
+		}
+		public void setLoginRes(LoginResponse loginRes) {
+			this.loginRes = loginRes;
+		}
+		public String getPassword() {
+			return password;
+		}
+		public void setPassword(String password) {
+			this.password = password;
+		}
+		public String getAccount() {
+			return account;
+		}
+		public void setAccount(String account) {
+			this.account = account;
+		}
+		public LoginTemp(LoginResponse loginRes, String password, String account) {
+			super();
+			this.loginRes = loginRes;
+			this.password = password;
+			this.account = account;
+		}
+	}
+	
 }

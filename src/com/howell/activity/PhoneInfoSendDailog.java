@@ -16,7 +16,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.view.Window;
 import android.view.View.OnTouchListener;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -68,6 +68,7 @@ public class PhoneInfoSendDailog extends DialogFragment implements OnTouchListen
 		mSend.setOnTouchListener(this);
 		Log.e("123", "on create view");
 		mIsShow = true;
+		getDialog().setCanceledOnTouchOutside(false);
 		return v;
 
 	}
@@ -140,6 +141,11 @@ public class PhoneInfoSendDailog extends DialogFragment implements OnTouchListen
 					if (resObj.getResult().equals("OK")) {
 						res = true;
 					}
+					
+//					res = true;
+//					Thread.sleep(1000);
+					
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 					return false;
@@ -149,7 +155,9 @@ public class PhoneInfoSendDailog extends DialogFragment implements OnTouchListen
 
 			protected void onPostExecute(Boolean result) {
 				mpb.setVisibility(View.GONE);
+				Window window = getDialog().getWindow();
 				if (result) {
+					window.setWindowAnimations(R.style.DialogSend);
 					mState.setText(mContext.getString(R.string.phone_info_send_ok));
 					mState.setTextColor(mContext.getResources().getColor(R.color.finger_green));
 					mCancel.postDelayed(new Runnable() {
@@ -158,9 +166,16 @@ public class PhoneInfoSendDailog extends DialogFragment implements OnTouchListen
 						}
 					}, 300);
 				}else{
+					//TODO 添加动画
+//					window.setWindowAnimations(R.style.DialogAnimationShake);
+					
+
 					mState.setText(mContext.getString(R.string.phone_info_send_fail));
 					mState.setTextColor(mContext.getResources().getColor(R.color.finger_fail));
 					mSend.setText(mContext.getString(R.string.phone_info_send_again));
+				
+					
+					
 				}
 			};
 		}.execute();
