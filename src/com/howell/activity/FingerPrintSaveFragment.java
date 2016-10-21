@@ -271,7 +271,6 @@ public class FingerPrintSaveFragment extends DialogFragment implements Fingerpri
 		case R.id.tv_finger_cancel:
 			Log.i("123", "tv_finger_cancel"+" act="+event.getAction());
 			if (event.getAction()==MotionEvent.ACTION_DOWN) {
-				
 				mTvCancel.postDelayed(new Runnable() {
 					public void run() {
 						dismiss();

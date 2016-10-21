@@ -2,7 +2,6 @@ package com.howell.activity;
 
 
 import com.android.howell.webcamH265.R;
-import com.google.zxing.client.result.ISBNParsedResult;
 import com.howell.action.PlatformAction;
 import com.howell.broadcastreceiver.HomeKeyEventBroadCastReceiver;
 import com.howell.db.UserLoginDao;
@@ -21,14 +20,9 @@ import com.howell.utils.PhoneConfig;
 import com.howell.utils.SharedPreferencesUtil;
 import com.howell.utils.Util;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.app.PendingIntent.CanceledException;
-import android.app.PendingIntent.OnFinished;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -40,7 +34,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
-import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -48,8 +41,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -192,11 +183,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	private boolean doCheckServiceIP(){
 		boolean res = true;
 		String ip = SharedPreferencesUtil.getLoginServiceIP(this);
+		Log.e("123", "doCheckServiceIP="+ip);
 		if (ip.equals("")) {
 			Intent intent = new Intent(this,LoginSettingActivity.class);
 			startActivity(intent);
 			return false;
 		}
+		
+		SoapManager.initUrl(this);
+		
 		return res;
 	} 
 

@@ -13,6 +13,8 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import android.util.Log;
+
 /**
  * @author 霍之昊 
  *
@@ -25,10 +27,12 @@ public class FakeX509TrustManager implements X509TrustManager {
 
     @Override 
     public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException { 
+    
     } 
 
     @Override 
     public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException { 
+    
     } 
 
     public boolean isClientTrusted(X509Certificate[] chain) { 

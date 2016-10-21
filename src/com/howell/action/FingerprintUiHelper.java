@@ -24,7 +24,6 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
 	private Handler mHandler = new Handler(){
 		@Override
 		public void handleMessage(Message msg) {
-			// TODO Auto-generated method stub
 			Log.i("123", "get msg msg.what="+msg.what);
 			super.handleMessage(msg);
 		}
@@ -70,7 +69,6 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
 
 	@Override
 	public void onAuthenticationError(int errorCode, CharSequence errString) {
-		// TODO Auto-generated method stub
 		Log.i("123", "onAuthenticationError:"+"errorCode="+errorCode+"   errString="+errString);
 		
 		switch (errorCode) {
@@ -92,28 +90,24 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
 	
 	@Override
 	public void onAuthenticationFailed() {
-		// TODO Auto-generated method stub
 		Log.e("123", "onAuthenticationFailed");
 		mCallback.onFailed();
 	}
 	
 	@Override
 	public void onAuthenticationHelp(int helpCode, CharSequence helpString) {
-		// TODO Auto-generated method stub
 		Log.e("123", "onAuthenticationError:"+"helpcode="+helpCode+"   helpString="+helpString);
 		mCallback.onHelp(helpCode, helpString);
 	}
 	
 	@Override
 	public void onAuthenticationSucceeded(AuthenticationResult result) {
-		// TODO Auto-generated method stub
 	
 		Class<AuthenticationResult> c = AuthenticationResult.class;
 		Method method = null;
 		try {
 			method = c.getMethod("getFingerprint");
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		Log.i("123", "method="+method);
@@ -122,16 +116,16 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
 		String className = null;
 		try {
 			 o = method.invoke(result, null);
+			 Log.e("123", "11111111111111111         o="+o+"       result="+result);
 			 className = o.getClass().getName();
 			 Log.i("123", "o="+o.toString()+" class="+o.getClass().getName());
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	
@@ -145,22 +139,20 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
 			Log.i("123", "name="+name.toString());
 			fingerID = Integer.valueOf(name.toString());
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		Log.e("123", "onAuthenticationSucceeded   fingerID="+fingerID);
+		
 		mCallback.onAuthenticated(fingerID);
 	}
 	
