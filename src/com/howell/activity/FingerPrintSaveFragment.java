@@ -197,7 +197,7 @@ public class FingerPrintSaveFragment extends DialogFragment implements Fingerpri
 	public void onHelp(int helpCode, CharSequence str) {
 		Log.i("123", "helpCode="+helpCode+" str="+str);
 		switch (helpCode) {
-		case 1001:
+		case 1001://等待手指放下
 			showAuthenticationInfo(MyState.WAIT);
 			break;
 		default:
@@ -315,6 +315,14 @@ public class FingerPrintSaveFragment extends DialogFragment implements Fingerpri
 	
 	public interface OnCreateViewFinish{
 		void onShowListener();
+	}
+
+
+
+	@Override
+	public void onFingerCancel() {
+		// TODO Auto-generated method stub
+		dismiss();
 	}
 
 }

@@ -38,8 +38,8 @@ public class PhoneConfig implements IConst{
 	public static String getPhoneDeveceID(Context context){
 		TelephonyManager tm = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
 		Log.i("123", "deviceid = "+tm.getDeviceId());
-//		return tm.getDeviceId();
-		return TEST_DEVICE_ID;
+		return tm.getDeviceId();
+//		return TEST_DEVICE_ID;
 	}
 	
 	public static long showUserSerialNum(Context context){

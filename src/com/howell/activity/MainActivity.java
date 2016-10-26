@@ -441,6 +441,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
 				MessageUtiles.postAlertDialog(MainActivity.getContext(), MainActivity.getContext().getString(R.string.login_fail), MainActivity.getContext().getString(R.string.login_error), R.drawable.expander_ic_minimized
 						, null, MainActivity.getContext().getString(R.string.ok), null, null);
 				// 				MessageUtiles.postNewUIDialog2(MainActivity.getContext(), MainActivity.getContext().getString(R.string.login_error), MainActivity.getContext().getString(R.string.ok), 1);
+				//取消waitdialog //FIXME
+				if (waitDialog.isShowing()) {
+					waitDialog.dismiss();
+				}
+				
 			}
 			if (msg.what == POSTNULLINFO) {
 				MessageUtiles.postAlertDialog(MainActivity.getContext(), MainActivity.getContext().getString(R.string.login_fail), MainActivity.getContext().getString(R.string.verification), R.drawable.expander_ic_minimized

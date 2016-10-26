@@ -35,6 +35,7 @@
     <string name="alarm">录像报警</string>
     <string name="about">关于e看 V1.1.9</string>
   
+    
     <string name="exit">注销帐号</string>
     <string name="email">邮箱地址</string>
     <string name="mobiletel">手机号码</string>
@@ -227,7 +228,7 @@
 	<string name="finger_login_with_password">使用密码登入</string>
 	<string name="fingerprint_description">通过识别指纹登入绑定的账号</string>
 	<string name="fingerprint_hint">请按下获取指纹</string>
-	<string name="fingerprint_failed">验证失败！！</string>
+	<string name="fingerprint_failed">验证失败..请重新尝试!!</string>
 	<string name="fingerprint_error">失败 请等待片刻再尝试</string>
 	<string name="fingerprint_ok">验证成功!!  正在登入..</string>
 	<string name="fingerprint_sign_error">登入失败 请用密码登入 </string>

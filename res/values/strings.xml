@@ -34,6 +34,8 @@
     <string name="sys_message">System message</string>
     <string name="alarm">Alarm</string>
     <string name="about">About eCamera V1.1.9</string>
+    
+    
     <string name="exit">Log Out</string>
     <string name="email">Email</string>
     <string name="mobiletel">Mobile phone number</string>
@@ -226,7 +228,7 @@
 	<string name="finger_login_with_password">use password</string>
 	<string name="fingerprint_description">Confirm fingerprint to continue</string>
 	<string name="fingerprint_hint">Touch sensor</string>
-	<string name="fingerprint_failed">Authentication Failed</string>
+	<string name="fingerprint_failed">Authentication Failed try it again</string>
 	<string name="fingerprint_error">Authentication ERROR plz wait and try again</string>
 	<string name="fingerprint_ok">Verification Successful!!  login..</string>
 	<string name="fingerprint_sign_error">sign in fail! plz use password to sign in</string>

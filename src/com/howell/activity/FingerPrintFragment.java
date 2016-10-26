@@ -404,5 +404,13 @@ public class FingerPrintFragment extends DialogFragment implements FingerprintUi
 	public interface OnCreateViewFinish{
 		void onShowListener();
 	}
+
+	@Override
+	public void onFingerCancel() {
+		Log.i("123", "onfingercancel");
+		dismiss();
+	}
+
+	
 	
 }
