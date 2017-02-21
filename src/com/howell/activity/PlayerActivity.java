@@ -440,7 +440,12 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 	    	boolean isNewVer = false;
 	    	@Override
 			protected Void doInBackground(Void... arg0) {
-	    		isNewVer = checkDevVer();
+	    		try{
+	    			isNewVer = checkDevVer();
+	    		}catch(Exception e){
+	    			Log.e("123", "ver is error we set isNewVar=false");
+	    		}
+	    		
 				return null;
 			}
 	    	

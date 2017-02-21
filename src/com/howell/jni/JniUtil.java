@@ -1,5 +1,7 @@
 package com.howell.jni;
 
+import android.R.bool;
+
 public class JniUtil {
 	static{
 		System.loadLibrary("jpush");
@@ -46,7 +48,7 @@ public class JniUtil {
 
 	//transmission
 	
-	public static native void transInit(String ip,int port);
+	public static native void transInit(String ip,int port,boolean isSSL);
 	public static native void transSetCallBackObj(Object o,int flag);
 	public static native void transSetCallbackMethodName(String methodName,int flag);
 	public static native void transDeinit();

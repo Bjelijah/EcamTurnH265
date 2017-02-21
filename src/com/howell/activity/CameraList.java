@@ -305,13 +305,20 @@ public class CameraList extends ListActivity implements Observer{
                 	GetDevVerReq getDevVerReq = new GetDevVerReq(mResponse.getAccount(),mResponse.getLoginSession(),d.getDevID());
                 	GetDevVerRes getDevVerRes = mSoapManager.getGetDevVerRes(getDevVerReq);
                 	Log.e("GetDevVerRes", getDevVerRes.toString());
-                	if(d.isOnLine() && DeviceVersionUtils.needToUpdate(getDevVerRes.getCurDevVer(), getDevVerRes.getNewDevVer())){
-                	//if(!getDevVerRes.getCurDevVer().equals(getDevVerRes.getNewDevVer())){	
-                		System.out.println(getDevVerRes.getCurDevVer()+","+getDevVerRes.getNewDevVer());
-                		d.setHasUpdate(true);
+                	try{
+                		
+                		if(d.isOnLine() && DeviceVersionUtils.needToUpdate(getDevVerRes.getCurDevVer(), getDevVerRes.getNewDevVer())){
+                        	//if(!getDevVerRes.getCurDevVer().equals(getDevVerRes.getNewDevVer())){	
+                        		System.out.println(getDevVerRes.getCurDevVer()+","+getDevVerRes.getNewDevVer());
+                        		d.setHasUpdate(true);
+                        	}
+                        	System.out.println(d.getDevID()+":"+d.isHasUpdate());
+                        	System.out.println("cur ver:"+getDevVerRes.getCurDevVer()+" new ver:"+getDevVerRes.getNewDevVer());
+                	}catch(Exception exception){
+                		Log.e("123","ver is error");
                 	}
-                	System.out.println(d.getDevID()+":"+d.isHasUpdate());
-                	System.out.println("cur ver:"+getDevVerRes.getCurDevVer()+" new ver:"+getDevVerRes.getNewDevVer());
+                	
+                
                 }
 			    myHandler.sendEmptyMessage(refreshDeviceUpdate);
         	}

@@ -1,7 +1,12 @@
 package com.howell.utils;
 
+
 public interface IConst {
 
+	final boolean USING_WSDL_ENCRYPTION = true;
+	final boolean USING_TURN_ENCRYPTION = true; 
+	
+	
 	final int MSG_LOGIN_CAM_OK       = 0xf0;
 	final int MSG_DISCONNECT		 = 0xf1;
 	

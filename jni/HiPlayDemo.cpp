@@ -995,7 +995,7 @@ int on_my_data_fun(int type,const char *data,int len){
 
 
 JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transInit
-(JNIEnv *env, jclass, jstring ip, jint port){
+(JNIEnv *env, jclass, jstring ip, jint port,jboolean isSSL){
 	if(g_transMgr==NULL){
 		g_transMgr = (TRANS_T*)malloc(sizeof(TRANS_T));
 		memset(g_transMgr,0,sizeof(TRANS_T));
@@ -1004,6 +1004,11 @@ JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transInit
 		env->GetJavaVM(&g_transMgr->jvm);
 	}
 	trans_init(on_my_connect,on_my_ack_res,on_my_data_fun,on_my_socket_error_fun);
+	if(!isSSL){
+		trans_set_no_use_ssl();
+	}
+
+
 	const char * _ip = env->GetStringUTFChars(ip,0);
 	strcpy(g_transMgr->ip,_ip);
 	g_transMgr->port = port;

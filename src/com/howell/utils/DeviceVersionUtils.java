@@ -1,7 +1,10 @@
 package com.howell.utils;
 
+import android.util.Log;
+
 public class DeviceVersionUtils {
 	public static boolean needToUpdate(String curVer,String newVer){
+		Log.i("123","curVer="+curVer+"   newVer="+newVer);
 		String[] s = curVer.split("\\.");
 		String[] s2 = newVer.split("\\.");
 		int firstCurVerNum = Integer.valueOf(s[0]);

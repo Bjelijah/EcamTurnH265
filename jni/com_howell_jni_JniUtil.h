@@ -218,10 +218,10 @@ JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_getHI265Version
 /*
  * Class:     com_howell_jni_JniUtil
  * Method:    transInit
- * Signature: (Ljava/lang/String;I)V
+ * Signature: (Ljava/lang/String;IZ)V
  */
 JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transInit
-  (JNIEnv *, jclass, jstring, jint);
+  (JNIEnv *, jclass, jstring, jint, jboolean);
 
 /*
  * Class:     com_howell_jni_JniUtil

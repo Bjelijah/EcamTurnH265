@@ -132,7 +132,7 @@ public class PlayerManager implements IConst{
 			protected Void doInBackground(Void... params) {
 				Log.i("123", "doinback");	
 				JniUtil.netInit();
-				JniUtil.transInit(turnServiceIP, turnServicePort);
+				JniUtil.transInit(turnServiceIP, turnServicePort,USING_TURN_ENCRYPTION);
 				mIsTransDeinit = false;
 				JniUtil.transSetCallBackObj(PlayerManager.this, 0);
 				JniUtil.transSetCallbackMethodName("onConnect", 0);
@@ -245,7 +245,7 @@ public class PlayerManager implements IConst{
 	}
 	
 	public void transInit(String ip,int port){
-		JniUtil.transInit(ip, port);
+		JniUtil.transInit(ip, port,USING_TURN_ENCRYPTION);
 	}
 	
 	public void transConnect(int type,String id,String name,String pwd){
