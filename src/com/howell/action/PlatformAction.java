@@ -38,7 +38,7 @@ public class PlatformAction implements IConst{
 	
 	private String account = null;
 	private String password= null;
-	
+	private String deviceID = null;
 	
 	List<Device> deviceList = null;
 	
@@ -82,8 +82,14 @@ public class PlatformAction implements IConst{
 		this.password = password;
 	}
 	public String getDeviceId(){
-		return device_id;
+		return deviceID;
+		
 	}
+	
+	public void setDevcieId(String deviceID){
+		this.deviceID=deviceID;
+	}
+	
 	
 	public void setTurnServerIP(String turnServerIp){
 		this.turnServerIp = turnServerIp;

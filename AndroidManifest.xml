@@ -245,6 +245,12 @@
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar" />
         
+            <activity
+            android:name="com.howell.activity.LoginSettingActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Black.NoTitleBar"
+            ></activity>
+        
         <activity
             android:name="com.wyy.twodimcode.CaptureActivity"
             android:screenOrientation="portrait"

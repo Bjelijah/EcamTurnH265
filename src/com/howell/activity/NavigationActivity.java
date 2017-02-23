@@ -181,6 +181,7 @@ public class NavigationActivity extends Activity {
         editor.putBoolean("isFirstLogin", false);
         editor.commit();
 		//NavigationActivity.this.finish();
+        finish();
 	}
 
 }

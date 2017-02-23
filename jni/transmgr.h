@@ -18,11 +18,14 @@ extern "C"{
 typedef int on_connect(const char* session_id);
 typedef int on_ack_res(int msgCommand,void * res,int len);
 typedef int on_data_fun(int type,const char *data,int len);
-
+typedef int on_socket_error();
 /**
  * 初始化
  */
-int trans_init(on_connect *c_fun,on_ack_res* a_fun,on_data_fun* d_fun);
+int trans_init(on_connect *c_fun,on_ack_res* a_fun,on_data_fun* d_fun,on_socket_error* e_fun);
+
+int trans_set_no_use_ssl();
+
 
 int trans_set_crt(const char *ca_crt,const char *client_crt,const char * client_key);
 

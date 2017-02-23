@@ -17,6 +17,18 @@
             android:background="#00000000"
             android:src="@drawable/back_btn_selector"
             android:layout_gravity="left|center" />
+        
+          <ImageButton 
+            android:id="@+id/ib_login_setting_service"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+            android:src="@drawable/setting_service_btn_selector"
+            android:layout_gravity="right|center"
+            />
+        
+        
+        
     </FrameLayout>    
 
     <LinearLayout

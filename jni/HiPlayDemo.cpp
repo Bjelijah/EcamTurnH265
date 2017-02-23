@@ -636,7 +636,7 @@ JNIEXPORT jboolean JNICALL Java_com_howell_jni_JniUtil_readyPlayLive
 	media_head.au_sample = 8;
 	media_head.au_bits = 16;
 	media_head.adec_code = ADEC_AAC;
-//	media_head.vdec_code = 0x0f;
+	//	media_head.vdec_code = 0x0f;
 	media_head.vdec_code = 0x10;
 
 	/*
@@ -658,6 +658,80 @@ JNIEXPORT jboolean JNICALL Java_com_howell_jni_JniUtil_readyPlayLive
 	LOGI("callback bool = %d   play_handle=%d ",b,res->play_handle);
 	return res->play_handle>=0?true:false;
 }
+
+
+JNIEXPORT jboolean JNICALL Java_com_howell_jni_JniUtil_readyPlayTurnLive
+(JNIEnv *env, jclass, jobject obj){
+	if(res == NULL) return false;
+	jclass clz = env->GetObjectClass(obj);
+	int auChannel = 0;
+	int auSample = 0;
+	int auBits = 0;
+	int auCode = 0;
+	int vidioCode = 0;
+	jfieldID id = env->GetFieldID(clz,"audioChannels","I");
+	auChannel = env->GetIntField(obj,id);
+	id = env->GetFieldID(clz,"audioSamples","I");
+	auSample = env->GetIntField(obj,id);
+	id = env->GetFieldID(clz,"audioBitwidth","I");
+	auBits = env->GetIntField(obj,id);
+	id = env->GetFieldID(clz,"audioCodec","I");
+	auCode = env->GetIntField(obj,id);
+	id = env->GetFieldID(clz,"videoCodec","I");
+	vidioCode = env->GetIntField(obj,id);
+
+
+	hwplay_init(1,0,0);
+	RECT area;
+	HW_MEDIAINFO media_head;
+	memset(&media_head,0,sizeof(media_head));
+
+
+	media_head.media_fourcc = HW_MEDIA_TAG;
+	media_head.au_channel = auChannel;
+	media_head.au_sample = auSample/1000;
+	media_head.au_bits = 16;
+
+	switch (auCode){
+		case 0:
+			media_head.adec_code = ADEC_AAC;
+			break;
+		case 1:
+			media_head.adec_code = ADEC_G711U;
+			break;
+	}
+
+	switch (vidioCode){
+		case 0:
+			media_head.vdec_code = VDEC_H264;//ecam
+			break;
+		case 1:
+			media_head.vdec_code = VDEC_H264_ENCRYPT;//bao
+			break;
+		case 2:
+			media_head.vdec_code = VDEC_HIS_H265;//h265
+			break;
+		case 3:
+			media_head.vdec_code = VDEC_HISH265_ENCRYPT;//h265 encrypt
+			break;
+	}
+
+//	media_head.adec_code = ADEC_AAC;
+//	//	media_head.vdec_code = 0x0f;
+//	media_head.vdec_code = 0x10;
+
+    PLAY_HANDLE  ph = hwplay_open_stream((const char*)&media_head,sizeof(media_head),1024*1024,0,area);
+    res->play_handle = ph;
+    hwplay_open_sound(ph);
+    //hwplay_set_max_framenum_in_buf(ph,is_playback?25:5);
+    LOGI("ph=%d",ph);
+    int b = hwplay_register_source_data_callback(ph,on_source_callback,0);
+    LOGI("callback bool = %d   play_handle=%d ",b,res->play_handle);
+    return res->play_handle>=0?true:false;
+
+
+}
+
 
 JNIEXPORT jboolean JNICALL Java_com_howell_jni_JniUtil_readyPlayPlayback
 (JNIEnv *, jclass){
@@ -811,7 +885,7 @@ typedef struct {
 	JavaVM* jvm;
 	JNIEnv * env;
 	jobject callback_obj;
-	jmethodID on_connect_method,on_disconnect_method;
+	jmethodID on_connect_method,on_disconnect_method,on_recordFile_method,on_socket_error_method,on_subscribe_method;
 	int transDataLen;
 }TRANS_T;
 
@@ -858,9 +932,9 @@ int on_my_connect(const char* session_id){
 int on_my_ack_res(int msgCommand,void * res,int len){
 
 	LOGI("msgCommand = 0x%x",msgCommand);
-	if(msgCommand == 0x13){
-		//trans_deInit();
-		//LOGI("trans deinit ok");
+	switch (msgCommand) {
+	case 0x13:
+	{
 		JNIEnv *env = NULL;
 		JavaVM * _jvm = g_transMgr->jvm;
 		if(_jvm->AttachCurrentThread( &env, NULL) != JNI_OK) {
@@ -872,6 +946,29 @@ int on_my_ack_res(int msgCommand,void * res,int len){
 			LOGE("%s: DetachCurrentThread() failed", __FUNCTION__);
 		}
 	}
+	break;
+	case 0x15:
+	{
+		JNIEnv *env = NULL;
+		JavaVM * _jvm = g_transMgr->jvm;
+		if(_jvm->AttachCurrentThread( &env, NULL) != JNI_OK) {
+			LOGE("%s: AttachCurrentThread() failed", __FUNCTION__);
+			return 0;
+		}
+		jstring  jsonStr = env->NewStringUTF((char *)res);
+		env->CallVoidMethod(g_transMgr->callback_obj,g_transMgr->on_subscribe_method,jsonStr);
+		env->DeleteLocalRef(jsonStr);
+		if (_jvm->DetachCurrentThread() != JNI_OK) {
+			LOGE("%s: DetachCurrentThread() failed", __FUNCTION__);
+		}
+	}
+	break;
+	default:
+		break;
+	}
+
+
+
 
 	return 0;
 }
@@ -938,13 +1035,28 @@ int on_my_data_fun(int type,const char *data,int len){
 }
 
 
+int on_my_socket_error_fun(){
+	LOGE("on my socket_error fun");
+	if(res == NULL)return -1;
+	JNIEnv *env = NULL;
+	JavaVM * _jvm = g_transMgr->jvm;
+	if(_jvm->AttachCurrentThread( &env, NULL) != JNI_OK) {
+		LOGE("%s: AttachCurrentThread() failed", __FUNCTION__);
+		return 0;
+	}
+	env->CallVoidMethod(g_transMgr->callback_obj,g_transMgr->on_socket_error_method);
+	if (_jvm->DetachCurrentThread() != JNI_OK) {
+		LOGE("%s: DetachCurrentThread() failed", __FUNCTION__);
+	}
 
+	return 0;
+}
 
 
 
 
 JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transInit
-(JNIEnv *env, jclass, jstring ip, jint port){
+(JNIEnv *env, jclass, jstring ip, jint port,jboolean isSSL){
 	if(g_transMgr==NULL){
 		g_transMgr = (TRANS_T*)malloc(sizeof(TRANS_T));
 		memset(g_transMgr,0,sizeof(TRANS_T));
@@ -952,7 +1064,11 @@ JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transInit
 
 		env->GetJavaVM(&g_transMgr->jvm);
 	}
-	trans_init(on_my_connect,on_my_ack_res,on_my_data_fun);
+	trans_init(on_my_connect,on_my_ack_res,on_my_data_fun,on_my_socket_error_fun);
+	if(!isSSL){
+		trans_set_no_use_ssl();
+	}
+
 	const char * _ip = env->GetStringUTFChars(ip,0);
 	strcpy(g_transMgr->ip,_ip);
 	g_transMgr->port = port;
@@ -1028,7 +1144,22 @@ JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transSetCallbackMethodName
 		g_transMgr->on_disconnect_method = env->GetMethodID(clz,_mehtod,"()V");
 		break;
 	}
+	case 2:{
+		jclass clz = env->GetObjectClass(g_transMgr->callback_obj);
+		g_transMgr->on_recordFile_method = env->GetMethodID(clz,_mehtod,"(Ljava/lang/String;)V");
+		break;
+	}
 
+	case 3:{
+		jclass clz = env->GetObjectClass(g_transMgr->callback_obj);
+		g_transMgr->on_socket_error_method = env->GetMethodID(clz,_mehtod,"()V");
+		break;
+	}
+	case 4:{
+		jclass clz = env->GetObjectClass(g_transMgr->callback_obj);
+		g_transMgr->on_subscribe_method = env->GetMethodID(clz,_mehtod,"(Ljava/lang/String;)V");
+		break;
+	}
 	default:
 		break;
 	}
@@ -1065,7 +1196,7 @@ JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_catchPic
 
 
 JNIEXPORT jint JNICALL Java_com_howell_jni_JniUtil_transGetStreamLenSomeTime
-  (JNIEnv *, jclass){
+(JNIEnv *, jclass){
 	if(g_transMgr==NULL)return 0;
 	int streamLen = g_transMgr->transDataLen;
 	g_transMgr->transDataLen = 0;
@@ -1073,7 +1204,7 @@ JNIEXPORT jint JNICALL Java_com_howell_jni_JniUtil_transGetStreamLenSomeTime
 }
 
 JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transGetCam
-  (JNIEnv *env, jclass, jstring jsonStr, jint len){
+(JNIEnv *env, jclass, jstring jsonStr, jint len){
 	const char *_jsonStr = env->GetStringUTFChars(jsonStr,0);
 	trans_getCamrea(_jsonStr,len);
 	env->ReleaseStringUTFChars(jsonStr,_jsonStr);
@@ -1081,14 +1212,14 @@ JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transGetCam
 }
 
 JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transGetRecordFiles
-  (JNIEnv *env, jclass, jstring jsonStr, jint len){
+(JNIEnv *env, jclass, jstring jsonStr, jint len){
 	const char *_jsonStr = env->GetStringUTFChars(jsonStr,0);
 	trans_getRecordFiles(_jsonStr,len);
 	env->ReleaseStringUTFChars(jsonStr,_jsonStr);
 }
 
 JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transSetCrt
-  (JNIEnv *env, jclass, jstring ca, jstring client, jstring key){
+(JNIEnv *env, jclass, jstring ca, jstring client, jstring key){
 	const char * _ca = env->GetStringUTFChars(ca,0);
 	const char * _client = env->GetStringUTFChars(client,0);
 	const char * _key  = env->GetStringUTFChars(key,0);
@@ -1106,7 +1237,7 @@ JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transSetCrt
 }
 
 JNIEXPORT void JNICALL Java_com_howell_jni_JniUtil_transSetCrtPaht
-  (JNIEnv *env, jclass, jstring caPath, jstring clientPath, jstring keyPath){
+(JNIEnv *env, jclass, jstring caPath, jstring clientPath, jstring keyPath){
 	const char *_caPath = env->GetStringUTFChars(caPath,0);
 	const char * _clientPath = env->GetStringUTFChars(clientPath,0);
 	const char * _keyPath = env->GetStringUTFChars(keyPath,0);

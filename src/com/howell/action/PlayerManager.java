@@ -10,7 +10,8 @@ import com.howell.jni.JniUtil;
 import com.howell.utils.IConst;
 import com.howell.utils.JsonUtil;
 import com.howell.utils.SDCardUtils;
-import com.howell.utils.SharedPreferencesUtils;
+import com.howell.utils.SharedPreferencesUtil;
+import com.howell.utils.TurnJsonUtil;
 import com.howell.utils.Utils;
 
 import android.content.Context;
@@ -38,9 +39,10 @@ public class PlayerManager implements IConst{
 	private int turnServicePort = -1;
 	private String sessionID = null;
 	private Context context;
-	
+	private static final int F_TIME = 1;
 	private Timer timer = null;
 	private MyTimerTask myTimerTask = null;
+	private int mUnexpectNoFrame = 0;
 	public void setContext(Context context){
 		this.context = context;
 	}
@@ -55,8 +57,17 @@ public class PlayerManager implements IConst{
 		Log.i("123", "onDisConnect ");
 		handler.sendEmptyMessage(MSG_DISCONNECT);
 	}
-	
-	
+			
+	public void onSubscribe(String jsonStr){
+		Log.i("123","onASubscribe   jsonStr="+jsonStr);
+
+		if(JniUtil.readyPlayTurnLive(TurnJsonUtil.getTurnSubscribeAckAllFromJsonStr(jsonStr))){
+			JniUtil.playView();
+			startTimerTask();
+		}else{
+			Log.e("123", "ready play live error");
+		}
+	}
 	
 	
 	public long getDialogId(){
@@ -101,33 +112,16 @@ public class PlayerManager implements IConst{
 //			handler.sendEmptyMessage(MSG_LOGIN_CAM_OK);
 //			return ;
 //		}
-		turnServiceIP = PlatformAction.getInstance().getTurnServerIP();
-		turnServicePort = PlatformAction.getInstance().getTurnServerPort();
+//		turnServiceIP = PlatformAction.getInstance().getTurnServerIP();
+//		turnServicePort = PlatformAction.getInstance().getTurnServerPort();
 		
 		//每次都读文件
-		String trunServer = SDCardUtils.getTurnServerInfoAndKeep(context);
+
+		
+		turnServiceIP  = SharedPreferencesUtil.getTurnServerIP(context);
+		turnServicePort = SharedPreferencesUtil.getTurnServerPort(context);
 		//文件中没有  使用默认 并 保存到 文件 保存到SharedPreferences
-		if (trunServer == null) {
-			Log.i("123", "get from test ip");
-			
-			turnServiceIP = TEST_IP;
-			turnServicePort = TEST_TURN_SERCICE_PORT;
-			String tunrServerInfo = TEST_IP+":"+TEST_TURN_SERCICE_PORT;
-			SDCardUtils.saveTurnServerInfo2SD(tunrServerInfo);
-			SharedPreferencesUtils.saveTurnServerInfo(context, TEST_IP, TEST_TURN_SERCICE_PORT+"");
-			
-		}else{
-			Log.i("123", "get from file");
-			String str [] = trunServer.split(":");
-			turnServiceIP = str[0];
-			try {
-				turnServicePort = Integer.parseInt(str[1]);
-			} catch (NumberFormatException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				turnServicePort = TEST_TURN_SERCICE_PORT;
-			}      
-		}
+	
 
 //		turnServiceIP = TEST_IP;
 //		turnServicePort = TEST_TURN_SERCICE_PORT;
@@ -146,11 +140,13 @@ public class PlayerManager implements IConst{
 				
 				JniUtil.netInit();
 				
-				JniUtil.transInit(turnServiceIP, turnServicePort);//FIXME 8812 test
+				JniUtil.transInit(turnServiceIP, turnServicePort,USING_TURN_ENCRYPTION);//FIXME 8812 test
 				JniUtil.transSetCallBackObj(PlayerManager.this, 0);
 				JniUtil.transSetCallbackMethodName("onConnect", 0);
 				JniUtil.transSetCallbackMethodName("onDisConnect", 1);
-				
+				JniUtil.transSetCallbackMethodName("onRecordFileList", 2);
+				JniUtil.transSetCallbackMethodName("onDisconnectUnexpect", 3);
+				JniUtil.transSetCallbackMethodName("onSubscribe", 4);
 				InputStream ca = getClass().getResourceAsStream("/assets/ca.crt");
 				InputStream client = getClass().getResourceAsStream("/assets/client.crt");
 				InputStream key = getClass().getResourceAsStream("/assets/client.key");
@@ -197,26 +193,44 @@ public class PlayerManager implements IConst{
 	}
 	
 	
+	public void onRecordFileList(String jsonStr){
+//		try {
+//			mList = JsonUtil.parseRecordFileList(new JSONObject(jsonStr));
+//			handler.sendEmptyMessage(MSG_RECORD_LIST_GET);
+//		} catch (JSONException e) {
+//			e.printStackTrace();
+//		}
+	}
 	
-	
-	
+	public void onDisconnectUnexpect(){
+		Log.i("123", "on disConnectUnexpect  we need reLink");
+		stopTimerTask();
+//		PlayerActivity.showStreamLen(0);
+		PlayerActivity.ShowStreamSpeed(0);
+		handler.sendEmptyMessageDelayed(PlayerActivity.MSG_DISCONNECT_UNEXPECT, 5000);
+	}
 	
 	
 	public void playViewCam(int is_sub){
 		
+		Subscribe s = new Subscribe(sessionID, (int)getDialogId(), PlatformAction.getInstance().getDeviceId(), "live",is_sub);
+		String jsonStr = JsonUtil.subScribeJson(s);
+		Log.i("123", "jsonStr="+jsonStr);
+		JniUtil.transSubscribe(jsonStr, jsonStr.length());
 		
-		if(JniUtil.readyPlayLive()){
-			Log.i("123", "play view cam");
-			Subscribe s = new Subscribe(sessionID, (int)getDialogId(), PlatformAction.getInstance().getDeviceId(), "live",is_sub);
-			String jsonStr = JsonUtil.subScribeJson(s);
-			Log.i("123", "jsonStr="+jsonStr);
-			JniUtil.transSubscribe(jsonStr, jsonStr.length());
-			
-			JniUtil.playView();
-			startTimerTask();
-		}else{
-			Log.e("123", "ready play live error");
-		}	
+		
+//		if(JniUtil.readyPlayLive()){
+//			Log.i("123", "play view cam");
+//			Subscribe s = new Subscribe(sessionID, (int)getDialogId(), PlatformAction.getInstance().getDeviceId(), "live",is_sub);
+//			String jsonStr = JsonUtil.subScribeJson(s);
+//			Log.i("123", "jsonStr="+jsonStr);
+//			JniUtil.transSubscribe(jsonStr, jsonStr.length());
+//			
+//			JniUtil.playView();
+//			startTimerTask();
+//		}else{
+//			Log.e("123", "ready play live error");
+//		}	
 	}
 	
 	public void stopViewCam(){
@@ -237,7 +251,7 @@ public class PlayerManager implements IConst{
 	}
 	
 	public void transInit(String ip,int port){
-		JniUtil.transInit(ip, port);
+		JniUtil.transInit(ip, port,USING_TURN_ENCRYPTION);
 	}
 	
 	public void transConnect(int type,String id,String name,String pwd){
@@ -266,17 +280,25 @@ public class PlayerManager implements IConst{
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	public void reLink(){
+		//stop
+		Log.d("123", "relink........");
+		handler.sendEmptyMessage(PlayerActivity.SHOWPROGRESSBAR);
+		new Thread(){
+			public void run() {
+				stopViewCam();
+				logoutCam();
+				transDeInit();
+				
+				try {
+					Thread.sleep(1000);//
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				loginCam();
+			};
+		}.start();
+	}
 	
 	
 	class MyTimerTask extends TimerTask{
@@ -284,7 +306,17 @@ public class PlayerManager implements IConst{
 		public void run() {
 			int streamLen = JniUtil.transGetStreamLenSomeTime();
 			Log.i("123", streamLen+"");
-			PlayerActivity.showStreamLen(streamLen/1024*8);
+			PlayerActivity.showStreamLen(streamLen/1024*8/F_TIME);
+			if (streamLen == 0) {
+				mUnexpectNoFrame++;
+			}else{
+				handler.sendEmptyMessage(PlayerActivity.HIDEPROGRESSBAR);
+				mUnexpectNoFrame = 0;
+			}
+			
+			if (mUnexpectNoFrame == 10) {// 10s / 1000ms 
+				handler.sendEmptyMessage(PlayerActivity.MSG_DISCONNECT_UNEXPECT);
+			}
 		}
 	}
 	

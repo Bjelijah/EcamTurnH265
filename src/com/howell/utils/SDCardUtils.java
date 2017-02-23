@@ -295,6 +295,7 @@ public class SDCardUtils {
 		return new String(buffer);
 	}
 	
+	@Deprecated
 	public static String getTurnServerInfoAndKeep(Context context){
 		String string =readTurnServerInfoFromSD();
 		if (string==null) {
@@ -303,7 +304,7 @@ public class SDCardUtils {
 		String str [] = string.split(":");
 		String ip = str[0];
 		String port = str[1];
-		SharedPreferencesUtils.saveTurnServerInfo(context, ip, port);
+		SharedPreferencesUtil.saveTurnServerInfo(context, ip, Integer.valueOf(port));
 		return string;
 	}
 	

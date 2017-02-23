@@ -25,6 +25,7 @@ import com.howell.action.PlatformAction;
 import com.howell.broadcastreceiver.HomeKeyEventBroadCastReceiver;
 import com.howell.utils.DecodeUtils;
 import com.howell.utils.MessageUtiles;
+import com.howell.utils.SharedPreferencesUtil;
 import com.howell.protocol.GetNATServerReq;
 import com.howell.protocol.GetNATServerRes;
 import com.howell.protocol.LoginRequest;
@@ -57,7 +58,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     
 //    private ResizeLayout layout;
     
-    private ImageButton mBack;
+    private ImageButton mBack,mSetting;
 	private Dialog waitDialog;
 
     @Override
@@ -77,7 +78,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         mUserName = (EditText) findViewById(R.id.username);
         mPassWord = (EditText) findViewById(R.id.password);
         mButton = (Button) findViewById(R.id.ok);
-        
+    	mSetting = (ImageButton)findViewById(R.id.ib_login_setting_service);
+    	mSetting.setOnClickListener(this);
         mBack = (ImageButton)findViewById(R.id.ib_login_back);
         
         SharedPreferences sharedPreferences = getSharedPreferences("set",Context.MODE_PRIVATE);
@@ -123,6 +125,30 @@ public class MainActivity extends Activity implements View.OnClickListener {
         
     }
     
+    @Override
+    protected void onStart() {
+    	
+    	if (doCheckServiceIP()) {
+			//TODO 
+		}
+    	
+    	super.onStart();
+    }
+    
+	private boolean doCheckServiceIP(){
+		boolean res = true;
+		String ip = SharedPreferencesUtil.getLoginServiceIP(this);
+		Log.e("123", "doCheckServiceIP="+ip);
+		if (ip.equals("")) {
+			Intent intent = new Intent(this,LoginSettingActivity.class);
+			startActivity(intent);
+			return false;
+		}
+		
+		SoapManager.initUrl(this);
+		
+		return res;
+	} 
 
     private static MainActivity getContext(){
     	return mActivity;
@@ -135,6 +161,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		case R.id.ib_login_back:
 			finish();
 			break;
+		case R.id.ib_login_setting_service:
+			Log.i("123", "!!!!!!!!!");
+			Intent intent = new Intent(this,LoginSettingActivity.class);
+			startActivity(intent);
+			break;
 		case R.id.ok:
 			final String account = mUserName.getText().toString().trim();
 	        final String password = mPassWord.getText().toString().trim();
@@ -144,6 +175,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 //				MessageUtiles.postNewUIDialog2(MainActivity.getContext(), MainActivity.getContext().getString(R.string.verification), MainActivity.getContext().getString(R.string.ok), 1);
 	        	return;
 	        }
+			SoapManager.initUrl(this);
 	        waitDialog = MessageUtiles.postWaitingDialog(MainActivity.this);
 			waitDialog.show();
 			new AsyncTask<Void, Integer, Void>() {

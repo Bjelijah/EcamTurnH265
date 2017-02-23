@@ -12,6 +12,7 @@ import org.ksoap2.serialization.SoapSerializationEnvelope;
 
 import org.ksoap2.transport.HttpTransportSE;
 
+import com.howell.action.PlatformAction;
 import com.howell.entityclass.Device;
 import com.howell.entityclass.DeviceSharer;
 import com.howell.entityclass.NodeDetails;
@@ -19,6 +20,7 @@ import com.howell.entityclass.VODRecord;
 import com.howell.utils.AnalyzingDoNetOutput;
 import com.howell.utils.IConst;
 import com.howell.utils.SSLConection;
+import com.howell.utils.SharedPreferencesUtil;
 
 import android.content.Context;
 import android.util.Log;
@@ -51,6 +53,20 @@ public class SoapManager implements Serializable ,IConst{
 
     }
 
+    public static void initUrl(Context context){
+    	
+    	String ip = SharedPreferencesUtil.getLoginServiceIP(context);
+    	int port = SharedPreferencesUtil.getLoginServicePort(context);
+		if (USING_WSDL_ENCRYPTION) {
+			sEndPoint = "https://" + ip + ":" + port + "/HomeService/HomeMCUService.svc?wsdl";
+		}else {
+			sEndPoint = "http://" + ip + ":" + port + "/HomeService/HomeMCUService.svc?wsdl";
+		}
+    	
+    
+    }
+    
+    
     public static SoapManager getInstance() {
         return sInstance;
     }

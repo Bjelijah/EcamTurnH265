@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
@@ -299,7 +301,7 @@ public class Utils {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		if (uuid==null) {
 			return null;
 		}
@@ -312,7 +314,11 @@ public class Utils {
 	}
 
 
-
+	public static boolean checkIsIP(String ip){
+		Pattern ipPattern=Pattern.compile("([1-9]|[1-9]\\d|1\\d{2}|2[0-1]\\d|22[0-3])(\\.(\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])){3}");
+		Matcher matcher=ipPattern.matcher(ip);
+		return matcher.matches();
+	}
 
 
 

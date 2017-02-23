@@ -128,7 +128,7 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 	public static final Integer SHOW_NO_STREAM_ARRIVE_PROGRESS = 0x0009;
 	public static final Integer HIDE_HAS_STREAM_ARRIVE_PROGRESS = 0x0010;
 	public static final Integer DETECT_IF_NO_STREAM_ARRIVE = 0x0011;
-	
+	public static final Integer MSG_DISCONNECT_UNEXPECT		   = 0x0012;
 	private SoapManager mSoapManger;
 	private String account,loginSession,devID;
 	private int channelNo;
@@ -451,7 +451,12 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 	    	@Override
 			protected Void doInBackground(Void... arg0) {
 				// TODO Auto-generated method stub
-	    		isNewVer = checkDevVer();
+	    		try {
+	    			isNewVer = checkDevVer();
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+	    		
 				return null;
 			}
 	    	
@@ -616,6 +621,17 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 		playMgr.setContext(this);
 		playMgr.loginCam();
 		
+	}
+	
+	
+	public static void ShowStreamSpeed(final int kbitPerSec){
+		if (mStreamLen!=null) {
+			mStreamLen.post(new Runnable() {
+				public void run() {
+					mStreamLen.setText(kbitPerSec+" Kbit/s");
+				}
+			});
+		}
 	}
 	
 	private boolean checkDevVer(){
@@ -965,7 +981,10 @@ public class PlayerActivity extends Activity implements Callback, OnTouchListene
 				Log.i("123", "msg what = MSG_DISCONNECT");
 				playMgr.transDeInit();
 			}
-		
+			if(msg.what == MSG_DISCONNECT_UNEXPECT){
+				Log.i("123", "PlayerActivity   msg what == MSG_DISCONNECT_UNEXPECT");
+				playMgr.reLink();
+			}
 			
 		}
 	}
