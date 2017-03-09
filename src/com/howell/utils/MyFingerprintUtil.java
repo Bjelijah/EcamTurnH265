@@ -3,6 +3,7 @@ package com.howell.utils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.IllegalFormatCodePointException;
 import java.util.List;
 
 import android.hardware.fingerprint.FingerprintManager;
@@ -41,7 +42,7 @@ public class MyFingerprintUtil {
 	}
 
 
-	public static MyFingerprintBeans getFingerprint(AuthenticationResult result) throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException{
+	public static MyFingerprintBeans getFingerprint(AuthenticationResult result) throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException,NullPointerException{
 		MyFingerprintBeans bean = new MyFingerprintBeans();
 		Class<AuthenticationResult> c = AuthenticationResult.class;
 		Method method1 = c.getMethod("getFingerprint");

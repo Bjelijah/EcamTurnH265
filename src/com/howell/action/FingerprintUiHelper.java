@@ -2,6 +2,7 @@ package com.howell.action;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.IllegalFormatCodePointException;
 import java.util.List;
 
 import com.howell.utils.MyFingerprintUtil;
@@ -125,6 +126,10 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
