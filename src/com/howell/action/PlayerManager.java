@@ -5,8 +5,20 @@ import java.io.InputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.android.howell.webcamH265.R.id;
+import com.howell.activity.DeviceSetActivity;
 import com.howell.activity.PlayerActivity;
+import com.howell.entityclass.VMDGrid;
 import com.howell.jni.JniUtil;
+import com.howell.protocol.GetVideoBasicReq;
+import com.howell.protocol.GetVideoBasicRes;
+import com.howell.protocol.SetVideoBasicReq;
+import com.howell.protocol.SetVideoBasicRes;
+import com.howell.protocol.SoapManager;
+import com.howell.protocol.SubscribeAndroidPushReq;
+import com.howell.protocol.SubscribeAndroidPushRes;
+import com.howell.protocol.VMDParamReq;
+import com.howell.protocol.VMDParamRes;
 import com.howell.utils.IConst;
 import com.howell.utils.JsonUtil;
 import com.howell.utils.SDCardUtils;
@@ -14,9 +26,12 @@ import com.howell.utils.SharedPreferencesUtil;
 import com.howell.utils.TurnJsonUtil;
 import com.howell.utils.Utils;
 
+import android.app.DownloadManager.Request;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import bean.GetRecordedFilesBean;
 import bean.Subscribe;
@@ -43,12 +58,31 @@ public class PlayerManager implements IConst{
 	private Timer timer = null;
 	private MyTimerTask myTimerTask = null;
 	private int mUnexpectNoFrame = 0;
+	
+	private String deviceID;
+	private int channelNo ;
+	private VMDParamRes vmdRes;
+	public void setDeviceID(String deviceID){
+		this.deviceID = deviceID;
+	}
+	public String getDeviceID(){
+		return this.deviceID;
+	}
+	public void setChannelNO(int channelNO){
+		this.channelNo = channelNO;
+	}
+	public int getChannelNO(){
+		return channelNo;
+	}
+	
+	
+	
 	public void setContext(Context context){
 		this.context = context;
 	}
 	
 	public void onConnect(String sessionId){
-		Log.i("123", "session id = "+sessionId);
+		Log.i("123", "!!!!!!!!!!!!!!!!!!!!!!!!!!!!session id = "+sessionId);
 		sessionID = sessionId;
 		handler.sendEmptyMessage(MSG_LOGIN_CAM_OK);
 	}
@@ -59,7 +93,7 @@ public class PlayerManager implements IConst{
 	}
 			
 	public void onSubscribe(String jsonStr){
-		Log.i("123","onASubscribe   jsonStr="+jsonStr);
+		Log.i("123","!!!!!!!!!!!!!!!!!!!!!!onASubscribe   jsonStr="+jsonStr);
 
 		if(JniUtil.readyPlayTurnLive(TurnJsonUtil.getTurnSubscribeAckAllFromJsonStr(jsonStr))){
 			JniUtil.playView();
@@ -77,15 +111,7 @@ public class PlayerManager implements IConst{
 	
 	private boolean doOnce = false;
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	private void startTimerTask(){
 		timer = new Timer();
 		myTimerTask = new MyTimerTask();
@@ -120,13 +146,18 @@ public class PlayerManager implements IConst{
 		
 		turnServiceIP  = SharedPreferencesUtil.getTurnServerIP(context);
 		turnServicePort = SharedPreferencesUtil.getTurnServerPort(context);
+		
+		
+		
+		
+		
 		//文件中没有  使用默认 并 保存到 文件 保存到SharedPreferences
 	
 
 //		turnServiceIP = TEST_IP;
 //		turnServicePort = TEST_TURN_SERCICE_PORT;
 		
-		Log.e("123", "login cam    turnIp="+turnServiceIP+"    trunPort="+turnServicePort);
+		Log.e("123", "!!!!!!!!!!!!!!!login cam    turnIp="+turnServiceIP+"    trunPort="+turnServicePort);
 
 
 		
@@ -170,7 +201,7 @@ public class PlayerManager implements IConst{
 				
 				JniUtil.transConnect(type, id, PlatformAction.getInstance().getAccount(), PlatformAction.getInstance().getPassword());
 				
-				Log.i("123", "transConnect ok");
+				Log.e("123", "transConnect ok");
 				
 				AudioAction.getInstance().initAudio();
 				AudioAction.getInstance().playAudio();
@@ -190,6 +221,7 @@ public class PlayerManager implements IConst{
 		
 		AudioAction.getInstance().stopAudio();
 		AudioAction.getInstance().deInitAudio();
+		JniUtil.transDeinit();
 	}
 	
 	
@@ -213,9 +245,9 @@ public class PlayerManager implements IConst{
 	
 	public void playViewCam(int is_sub){
 		
-		Subscribe s = new Subscribe(sessionID, (int)getDialogId(), PlatformAction.getInstance().getDeviceId(), "live",is_sub);
+		Subscribe s = new Subscribe(sessionID, (int)getDialogId(), deviceID, "live",is_sub);
 		String jsonStr = JsonUtil.subScribeJson(s);
-		Log.i("123", "jsonStr="+jsonStr);
+		Log.i("123", "kaishi play view cam jsonStr="+jsonStr);
 		JniUtil.transSubscribe(jsonStr, jsonStr.length());
 		
 		
@@ -279,6 +311,40 @@ public class PlayerManager implements IConst{
 		}.execute(str);
 	}
 	
+	public void rePlay(final int is_sub){
+		if (handler!=null) {
+			handler.sendEmptyMessage(MSG_DATA_MISSING);
+		}
+		new AsyncTask<Void, Void, Void>(){
+
+			@Override
+			protected Void doInBackground(Void... arg0) {
+				// TODO Auto-generated method stub
+				stopViewCam();
+				try {
+					Thread.sleep(300);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				playViewCam(is_sub);
+				
+				return null;
+			}
+			protected void onPostExecute(Void result) {
+				
+			};
+		}.execute();
+		
+		
+		
+		
+		
+		
+	}
+	
+	
 	
 	public void reLink(){
 		//stop
@@ -319,5 +385,136 @@ public class PlayerManager implements IConst{
 			}
 		}
 	}
+	
+	//播放功能
+	public void getVideoBaseParam(){
+		Log.i("123", "get video base param");
+		if (IS_DEBUG) {
+			return;
+		}
+		
+		
+		new AsyncTask<Void, Void, Boolean>(){
+			GetVideoBasicRes res;
+			
+			@Override
+			protected Boolean doInBackground(Void... arg0) {
+				// TODO Auto-generated method stub
+				SoapManager mgr = SoapManager.getInstance();
+				res = mgr.GetVideoBasicRes(new GetVideoBasicReq(PlatformAction.getInstance().getAccount()
+						, PlatformAction.getInstance().getLoginSession(), deviceID, channelNo));
+				vmdRes = mgr.getVMDParam(new VMDParamReq(PlatformAction.getInstance().getAccount()
+						, PlatformAction.getInstance().getLoginSession(), deviceID, channelNo));
+				return res.getResult().equalsIgnoreCase("OK");
+			}
+
+			@Override
+			protected void onPostExecute(Boolean result) {
+				// TODO Auto-generated method stub
+				if (handler==null) return;
+				if (result) {
+					Message msg = new Message();
+					msg.what = MSG_GET_VIDEO_BASIC_OK;
+					Bundle data = new Bundle();
+					data.putSerializable("res", res);
+					data.putBoolean("vmd", vmdRes.getEnabled());
+					msg.setData(data);
+					handler.sendMessage(msg);
+				}else{
+					handler.sendEmptyMessage(MSG_GET_VIDEO_BASIC_ERROR);
+				}
+				super.onPostExecute(result);
+			}
+			
+		}.execute();
+		
+		
+		
+		
+	
+		
+		
+	}
+	
+	public void setVideoBaseParam(SetVideoBasicReq req){
+		if (IS_DEBUG) {
+			return;
+		}
+		req.setAccount(PlatformAction.getInstance().getAccount())
+		.setLoginSession(PlatformAction.getInstance().getLoginSession())
+		.setDevID(deviceID).setChannelNO(channelNo);
+		
+		new AsyncTask<SetVideoBasicReq, Void, Boolean>(){
+			SetVideoBasicRes res;
+			@Override
+			protected Boolean doInBackground(SetVideoBasicReq... arg0) {
+				// TODO Auto-generated method stub
+				res = SoapManager.getInstance().SetVideoBasicRes(arg0[0]);
+				return res.getResult().equalsIgnoreCase("OK");
+			}
+			
+			protected void onPostExecute(Boolean result) {
+				if (handler==null)return;
+				if (result) {
+					handler.sendEmptyMessage(MSG_SET_VIDEO_BASIC_OK);
+				}else{
+					handler.sendEmptyMessage(MSG_SET_VIDEO_BASIC_ERROR);
+				}
+				
+			};
+			
+		}.execute(req);
+		
+		
+		
+	}
+	
+	public void setVMD(final boolean b){
+		if (vmdRes==null) {
+			if (handler!=null) {
+				handler.sendEmptyMessage(MSG_SET_VIDEO_BASIC_ERROR);
+			}
+			return;
+		}
+		
+		new AsyncTask<Void, Void, Boolean>(){
+
+			@Override
+			protected Boolean doInBackground(Void... arg0) {
+				// TODO Auto-generated method stub
+				vmdRes.setEnabled(b);
+				vmdRes.setSensitivity(40);
+			
+				VMDGrid grids = new VMDGrid(b?DeviceSetActivity.VMD_DEFAULT_GRIDS:DeviceSetActivity.VMD_ZERO_GRIDS);
+				SubscribeAndroidPushReq req=new SubscribeAndroidPushReq(PlatformAction.getInstance().getAccount(),PlatformAction.getInstance().getLoginSession(),
+						b?0x01:0x00,deviceID, channelNo);
+				vmdRes.setGrids(grids);
+				String res1 = SoapManager.getInstance().setVMDParam(vmdRes);
+				SubscribeAndroidPushRes res2 =SoapManager.getInstance().getSubscribeAndroidPushRes(req);	
+				return res1.equalsIgnoreCase("OK")&&res2.getResult().equalsIgnoreCase("OK");
+			}
+			protected void onPostExecute(Boolean result) {
+				if (handler==null) 	return;
+				if (result) {
+					handler.sendEmptyMessage(MSG_SET_VIDEO_BASIC_OK);
+				}else{
+					handler.sendEmptyMessage(MSG_SET_VIDEO_BASIC_ERROR);
+				}
+			};
+		}.execute();
+		
+		
+		vmdRes.setEnabled(b);
+		
+		
+		
+		
+		
+	}
+	
+	
+	
+	
+	
 	
 }

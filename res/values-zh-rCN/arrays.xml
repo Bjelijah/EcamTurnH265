@@ -18,4 +18,13 @@
         <item>均衡</item>
         <item>细致</item>
     </string-array>
+    
+    <string-array name="shutter_arry">
+        <item>请选择：</item>
+        <item>1/2</item>
+        <item>1/4</item>
+        <item>1/7</item>
+        <item>1/12.5</item>
+    </string-array> 
+    
 </resources>

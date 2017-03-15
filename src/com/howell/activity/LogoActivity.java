@@ -136,6 +136,7 @@ public class LogoActivity extends Activity implements TagAliasCallback{
 							LoginRequest loginReq = new LoginRequest(account, "Common",encodedPassword, "1.0.0.1");
 							LoginResponse loginRes = mSoapManager.getUserLoginRes(loginReq);
 							if(loginRes.getResult().equals("OK")){
+								PlatformAction.getInstance().setLoginSession(loginRes.getLoginSession());	
 								//登录成功则进入摄像机列表界面
 								GetNATServerRes res = mSoapManager.getGetNATServerRes(new GetNATServerReq(account, loginRes.getLoginSession()));
 								Log.e("LogoActivity", res.toString());

@@ -3,12 +3,6 @@ package com.howell.utils;
 import android.content.Context;
 import android.view.WindowManager;
 
-/**
- * @author huozhihao
- * 
- * 用于获取手机屏幕长度和宽度的工具类
- */
-
 public class PhoneConfig {
 	private static WindowManager wm;
 	
@@ -23,5 +17,4 @@ public class PhoneConfig {
 		int height = wm.getDefaultDisplay().getHeight();//��Ļ���
 		return height;
 	}
-	
 }

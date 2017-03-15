@@ -699,14 +699,15 @@ public class CameraList extends ListActivity implements Observer{
 					if (!((NodeDetails)getItem(Integer.valueOf(arg0.getTag().toString()))).isOnLine()) {
 						MessageUtiles.postToast(getApplicationContext(), getResources().getString(R.string.not_online_message),1000);
 					} else {
-						Intent intent = new Intent(CameraList.this, PlayerActivity.class);
+					//	Intent intent = new Intent(CameraList.this, PlayerActivity.class);
+						Intent intent = new Intent(CameraList.this, HWPlayerActivity.class);
 						int index = Integer.valueOf(arg0.getTag().toString());
 						
 						String deviceID = list.get(index).getDevID();
+						int channelNo = list.get(index).getChannelNo();
 						PlatformAction.getInstance().setDevice_id(index);
-						PlatformAction.getInstance().setDevcieId(deviceID);
-						
-						 
+						PlayerManager.getInstance().setDeviceID(deviceID);
+						PlayerManager.getInstance().setChannelNO(channelNo); 
 						intent.putExtra("arg", ((NodeDetails) getItem(Integer.valueOf(arg0.getTag().toString()))));
 						startActivity(intent);
 					}

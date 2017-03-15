@@ -31,16 +31,24 @@ public class PlatformAction implements IConst{
 		return mInstance;
 	}
 	SoapManager mSoapManager = SoapManager.getInstance();
-	
+	private String loginSession = null;
 	private String turnServerIp = null;
 	private int turnServerPort = -1;
 	private String device_id = null;
 	
 	private String account = null;
 	private String password= null;
-	private String deviceID = null;
+	
 	
 	List<Device> deviceList = null;
+	
+	public void setLoginSession(String session){
+		this.loginSession = session;
+	}
+	
+	public String getLoginSession(){
+		return loginSession;
+	}
 	
 	public List<Device> getDeviceList() {
 		return deviceList;
@@ -81,14 +89,7 @@ public class PlatformAction implements IConst{
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public String getDeviceId(){
-		return deviceID;
-		
-	}
-	
-	public void setDevcieId(String deviceID){
-		this.deviceID=deviceID;
-	}
+
 	
 	
 	public void setTurnServerIP(String turnServerIp){

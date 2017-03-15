@@ -53,5 +53,7 @@
         <item name="android:windowEnterAnimation">@anim/popup_anim_in</item>
         <item name="android:windowExitAnimation">@anim/popup_anim_out</item>
     </style>
-
+    <style name="MyCheckBoxEx" parent="@android:style/Widget.CompoundButton.CheckBox">
+		<item name="android:button">@drawable/cb_select_ex</item>
+	</style>
 </resources>

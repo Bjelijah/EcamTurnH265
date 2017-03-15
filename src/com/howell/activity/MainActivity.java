@@ -210,6 +210,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	                     editor.putString("account", account);
 	                     editor.putString("password", password);
 	                     editor.commit();
+	                     PlatformAction.getInstance().setLoginSession(loginRes.getLoginSession());
 	                     PlatformAction.getInstance().setAccount(account);
 	                     PlatformAction.getInstance().setPassword(password);	                     
 	                 	 PlatformAction.getInstance().setDeviceList(loginRes.getNodeList());

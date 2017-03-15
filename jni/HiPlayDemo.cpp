@@ -690,7 +690,7 @@ JNIEXPORT jboolean JNICALL Java_com_howell_jni_JniUtil_readyPlayTurnLive
 	media_head.media_fourcc = HW_MEDIA_TAG;
 	media_head.au_channel = auChannel;
 	media_head.au_sample = auSample/1000;
-	media_head.au_bits = 16;
+	media_head.au_bits = auBits;
 
 	switch (auCode){
 		case 0:

@@ -72,7 +72,7 @@ public class DeviceSetActivity extends Activity implements
     public NodeDetails dev;
     private boolean isCrashed;
     private static int[][] reso_bitrate_map_ = {{96,128,196},{128,256,384},{1024,1536,2048}};
-    private static String[] VMD_DEFAULT_GRIDS = {
+    public static String[] VMD_DEFAULT_GRIDS = {
     	"00000000000",
     	"00000000000",
     	"00011111000",
@@ -83,7 +83,7 @@ public class DeviceSetActivity extends Activity implements
     	"00000000000",
     	"00000000000",
     };
-    private static String[] VMD_ZERO_GRIDS = {
+    public static String[] VMD_ZERO_GRIDS = {
     	"00000000000",
     	"00000000000",
     	"00000000000",
